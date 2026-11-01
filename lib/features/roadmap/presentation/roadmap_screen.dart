@@ -5,7 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../../../core/responsive/responsive_layout.dart';
 import '../../../core/storage/app_state_providers.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/widgets/cosmic_card.dart';
+import '../../../core/widgets/mascot_speech_bubble.dart';
 import '../../lesson/data/sample_lessons.dart';
 
 class RoadmapScreen extends ConsumerWidget {
@@ -31,25 +34,38 @@ class RoadmapScreen extends ConsumerWidget {
               'Sigue el camino secuencial para dominar la programación. Puedes volver a cualquier lección anterior para repasar.',
               style: AppTypography.body(scale),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 18),
+            MascotSpeechBubble(
+              title: 'Guía de la Ruta Cósmica',
+              text: '¡Cada módulo completado desbloquea el siguiente nivel! Sigue el sendero luminoso para no perderte.',
+              scale: scale,
+            ),
+            const SizedBox(height: 24),
 
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: modules.length,
-              separatorBuilder: (context, index) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Center(
-                  child: Container(
-                    width: 3,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceBorder,
-                      borderRadius: BorderRadius.circular(2),
+              separatorBuilder: (context, index) {
+                final isDone = modules[index].lessons.every(
+                  (l) => user.completedLessons.contains(l.id),
+                );
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Center(
+                    child: SizedBox(
+                      width: 140,
+                      height: 50,
+                      child: CustomPaint(
+                        painter: _SinuousConnectorPainter(
+                          isCompleted: isDone,
+                          toRight: index % 2 == 0,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
               itemBuilder: (context, index) {
                 final mod = modules[index];
                 final completedInMod = mod.lessons
@@ -59,10 +75,9 @@ class RoadmapScreen extends ConsumerWidget {
                     mod.lessons.isNotEmpty &&
                     completedInMod == mod.lessons.length;
 
-                return Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
+                return CosmicCard(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
@@ -180,8 +195,7 @@ class RoadmapScreen extends ConsumerWidget {
                         }),
                       ],
                     ),
-                  ),
-                );
+                ).animateEntrance(index: index);
               },
             ),
 
@@ -191,4 +205,51 @@ class RoadmapScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+class _SinuousConnectorPainter extends CustomPainter {
+  final bool isCompleted;
+  final bool toRight;
+
+  _SinuousConnectorPainter({required this.isCompleted, required this.toRight});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final activeColor = isCompleted ? AppColors.successGreen : AppColors.secondaryCyan;
+
+    final paint = Paint()
+      ..color = activeColor.withValues(alpha: 0.5)
+      ..strokeWidth = 2.5
+      ..style = PaintingStyle.stroke;
+
+    final path = Path();
+    final startX = toRight ? size.width * 0.35 : size.width * 0.65;
+    final endX = toRight ? size.width * 0.65 : size.width * 0.35;
+
+    path.moveTo(startX, 0);
+    path.cubicTo(
+      startX, size.height * 0.5,
+      endX, size.height * 0.5,
+      endX, size.height,
+    );
+
+    canvas.drawPath(path, paint);
+
+    // Glowing center waypoint
+    final nodePaint = Paint()
+      ..color = activeColor
+      ..style = PaintingStyle.fill;
+
+    final glowPaint = Paint()
+      ..color = activeColor.withValues(alpha: 0.3)
+      ..style = PaintingStyle.fill;
+
+    final center = Offset(size.width * 0.5, size.height * 0.5);
+    canvas.drawCircle(center, 9, glowPaint);
+    canvas.drawCircle(center, 4.5, nodePaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _SinuousConnectorPainter oldDelegate) =>
+      oldDelegate.isCompleted != isCompleted || oldDelegate.toRight != toRight;
 }

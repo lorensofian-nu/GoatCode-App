@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/responsive/responsive_layout.dart';
 import '../../../core/storage/app_state_providers.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_typography.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
@@ -69,7 +70,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                               color: AppColors.primaryNeon,
                               size: 80,
                             ),
-                      ),
+                      ).animateBreathing(),
                       const SizedBox(height: 24),
                       Text(
                         '¡Bienvenido a GoatCode!',
@@ -129,7 +130,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     ],
                   ),
                 ),
-              ),
+              ).animateEntrance(index: 0),
             ),
           ),
         ),

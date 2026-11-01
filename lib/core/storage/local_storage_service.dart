@@ -28,6 +28,7 @@ class LocalStorageService {
   static const _keyTextScale = 'goat_pref_text_scale';
   static const _keyHighContrast = 'goat_pref_high_contrast';
   static const _keySoundEnabled = 'goat_pref_sound_enabled';
+  static const _keyGlassEffectEnabled = 'goat_pref_glass_effect_enabled';
 
   // Username
   String? getUsername() => _prefs.getString(_keyUsername);
@@ -123,6 +124,10 @@ class LocalStorageService {
   bool getSoundEnabled() => _prefs.getBool(_keySoundEnabled) ?? true;
   Future<bool> setSoundEnabled(bool value) =>
       _prefs.setBool(_keySoundEnabled, value);
+
+  bool getGlassEffectEnabled() => _prefs.getBool(_keyGlassEffectEnabled) ?? true;
+  Future<bool> setGlassEffectEnabled(bool value) =>
+      _prefs.setBool(_keyGlassEffectEnabled, value);
 
   Future<bool> clearAll() => _prefs.clear();
 }

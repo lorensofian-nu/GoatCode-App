@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/responsive/responsive_layout.dart';
 import '../../../core/storage/app_state_providers.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/widgets/mascot_streak_aura.dart';
 
 class MascotScreen extends ConsumerStatefulWidget {
   const MascotScreen({super.key});
@@ -93,6 +95,7 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userProfileProvider);
     final accessibility = ref.watch(accessibilityProvider);
     final scale = accessibility.textScale.scaleFactor;
     final activeSkinData = _skins.firstWhere(
@@ -138,24 +141,15 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
                 ),
                 child: Column(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.secondaryCyan.withValues(
-                              alpha: 0.35,
-                            ),
-                            blurRadius: 28,
-                            spreadRadius: 6,
-                          ),
-                        ],
-                      ),
+                    MascotStreakAura(
+                      streak: user.streak,
+                      size: 210,
+                      scale: scale,
                       child: Image.asset(
                         activeSkinData['asset']!,
-                        width: 200,
-                        height: 200,
+                        key: ValueKey(_selectedSkin),
+                        width: 180,
+                        height: 180,
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) =>
                             const Icon(
@@ -163,7 +157,7 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
                               size: 100,
                               color: AppColors.primaryNeon,
                             ),
-                      ),
+                      ).animateCelebrate().animateBreathing(),
                     ),
                     const SizedBox(height: 20),
                     Text(
@@ -180,7 +174,7 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
                   ],
                 ),
               ),
-            ),
+            ).animateEntrance(index: 0),
             const SizedBox(height: 28),
 
             Text('Elige un atuendo:', style: AppTypography.headingSmall(scale)),
@@ -192,7 +186,8 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
                 return Wrap(
                   spacing: 12,
                   runSpacing: 12,
-                  children: _skins.map((skin) {
+                  children: List.generate(_skins.length, (idx) {
+                    final skin = _skins[idx];
                     final isSelected = _selectedSkin == skin['id'];
                     return SizedBox(
                       width: isSingle
@@ -202,7 +197,8 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
                         onTap: () =>
                             setState(() => _selectedSkin = skin['id']!),
                         borderRadius: BorderRadius.circular(14),
-                        child: Container(
+                        child: AnimatedContainer(
+                          duration: AppMotion.durationMicro,
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
                             color: isSelected
@@ -215,6 +211,15 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
                                   : AppColors.surfaceBorder,
                               width: isSelected ? 2.0 : 1.0,
                             ),
+                            boxShadow: [
+                              if (isSelected)
+                                BoxShadow(
+                                  color: AppColors.secondaryCyan.withValues(
+                                    alpha: 0.2,
+                                  ),
+                                  blurRadius: 12,
+                                ),
+                            ],
                           ),
                           child: Row(
                             children: [
@@ -259,8 +264,8 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
                           ),
                         ),
                       ),
-                    );
-                  }).toList(),
+                    ).animateEntrance(index: idx + 1);
+                  }),
                 );
               },
             ),

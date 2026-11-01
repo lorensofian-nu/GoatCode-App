@@ -103,22 +103,28 @@ class AccessibilityState {
   final TextScaleLevel textScale;
   final bool highContrast;
   final bool soundEnabled;
+  final bool glassEffectEnabled;
 
   const AccessibilityState({
     required this.textScale,
     required this.highContrast,
     required this.soundEnabled,
+    this.glassEffectEnabled = true,
   });
+
+  bool get isMatteMode => !glassEffectEnabled;
 
   AccessibilityState copyWith({
     TextScaleLevel? textScale,
     bool? highContrast,
     bool? soundEnabled,
+    bool? glassEffectEnabled,
   }) {
     return AccessibilityState(
       textScale: textScale ?? this.textScale,
       highContrast: highContrast ?? this.highContrast,
       soundEnabled: soundEnabled ?? this.soundEnabled,
+      glassEffectEnabled: glassEffectEnabled ?? this.glassEffectEnabled,
     );
   }
 }
@@ -131,6 +137,7 @@ class AccessibilityNotifier extends Notifier<AccessibilityState> {
       textScale: storage.getTextScale(),
       highContrast: storage.getHighContrast(),
       soundEnabled: storage.getSoundEnabled(),
+      glassEffectEnabled: storage.getGlassEffectEnabled(),
     );
   }
 
@@ -152,6 +159,13 @@ class AccessibilityNotifier extends Notifier<AccessibilityState> {
     final newVal = !state.soundEnabled;
     await storage.setSoundEnabled(newVal);
     state = state.copyWith(soundEnabled: newVal);
+  }
+
+  Future<void> toggleGlassEffect() async {
+    final storage = ref.read(localStorageServiceProvider);
+    final newVal = !state.glassEffectEnabled;
+    await storage.setGlassEffectEnabled(newVal);
+    state = state.copyWith(glassEffectEnabled: newVal);
   }
 }
 
