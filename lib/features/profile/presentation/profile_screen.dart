@@ -243,6 +243,30 @@ class ProfileScreen extends ConsumerWidget {
                           .read(accessibilityProvider.notifier)
                           .toggleSound(),
                     ),
+                    const SizedBox(height: 12),
+
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        'Acabado Cristal Cósmico (Glassmorphism)',
+                        style: TextStyle(
+                          fontSize: 16 * scale,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      subtitle: Text(
+                        accessibility.glassEffectEnabled
+                            ? 'Activo: Efecto espejo y desenfoque óptico de cristal cósmico.'
+                            : 'Modo Obsidiana Mate: Fondos sólidos, máxima nitidez y cero reflejos.',
+                        style: AppTypography.caption(scale),
+                      ),
+                      value: accessibility.glassEffectEnabled,
+                      activeThumbColor: AppColors.secondaryCyan,
+                      onChanged: (_) => ref
+                          .read(accessibilityProvider.notifier)
+                          .toggleGlassEffect(),
+                    ),
                   ],
                 ),
               ),

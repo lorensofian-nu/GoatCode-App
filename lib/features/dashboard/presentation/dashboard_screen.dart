@@ -5,7 +5,11 @@ import 'package:go_router/go_router.dart';
 import '../../../core/responsive/responsive_layout.dart';
 import '../../../core/storage/app_state_providers.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/widgets/cosmic_card.dart';
+import '../../../core/widgets/mascot_speech_bubble.dart';
+import '../../../core/widgets/mascot_streak_aura.dart';
 import '../../lesson/data/sample_lessons.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -192,23 +196,44 @@ class DashboardScreen extends ConsumerWidget {
                     ),
                     if (!ResponsiveLayout.isCompact(context)) ...[
                       const SizedBox(width: 24),
-                      Image.asset(
-                        mascotAsset,
-                        width: 160,
-                        height: 160,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(
-                              Icons.pets,
-                              color: AppColors.primaryNeon,
-                              size: 80,
+                      SizedBox(
+                        width: 210,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            MascotSpeechBubble(
+                              text: user.streak > 0
+                                  ? '¡Llevas ${user.streak} días seguidos! Tu constancia fortalece tu lógica.'
+                                  : '¡Hola! Aprender programación es como armar un rompecabezas. ¡Vamos paso a paso!',
+                              title: 'GoatCode',
+                              scale: scale,
                             ),
+                            const SizedBox(height: 10),
+                            MascotStreakAura(
+                              streak: user.streak,
+                              size: 110,
+                              scale: scale,
+                              child: Image.asset(
+                                mascotAsset,
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(
+                                      Icons.pets,
+                                      color: AppColors.primaryNeon,
+                                      size: 70,
+                                    ),
+                              ).animateBreathing(),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ],
                 ),
               ),
-            ),
+            ).animateEntrance(index: 0),
             const SizedBox(height: 32),
 
             Row(
@@ -233,7 +258,8 @@ class DashboardScreen extends ConsumerWidget {
                 return Wrap(
                   spacing: 16,
                   runSpacing: 16,
-                  children: modules.map((mod) {
+                  children: List.generate(modules.length, (idx) {
+                    final mod = modules[idx];
                     final completedInMod = mod.lessons
                         .where((l) => user.completedLessons.contains(l.id))
                         .length;
@@ -246,92 +272,90 @@ class DashboardScreen extends ConsumerWidget {
                       width: isSingleColumn
                           ? constraints.maxWidth
                           : (constraints.maxWidth - 16) / 2,
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor: modProgress == 1.0
-                                        ? AppColors.successGreen.withValues(
-                                            alpha: 0.2,
-                                          )
-                                        : AppColors.primaryNeon.withValues(
-                                            alpha: 0.2,
-                                          ),
-                                    child: Icon(
-                                      modProgress == 1.0
-                                          ? Icons.check
-                                          : Icons.code,
-                                      color: modProgress == 1.0
-                                          ? AppColors.successGreen
-                                          : AppColors.secondaryCyan,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          mod.title,
-                                          style: AppTypography.headingSmall(
-                                            scale,
-                                          ),
+                      child: CosmicCard(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: modProgress == 1.0
+                                      ? AppColors.successGreen.withValues(
+                                          alpha: 0.2,
+                                        )
+                                      : AppColors.primaryNeon.withValues(
+                                          alpha: 0.2,
                                         ),
-                                        Text(
-                                          '$completedInMod de ${mod.lessons.length} lecciones',
-                                          style: AppTypography.caption(scale),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Text(
-                                    '$modPercent%',
-                                    style: TextStyle(
-                                      color: AppColors.secondaryCyan,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 16 * scale,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                mod.description,
-                                style: AppTypography.bodyMuted(scale),
-                              ),
-                              const SizedBox(height: 16),
-                              SizedBox(
-                                width: double.infinity,
-                                child: OutlinedButton(
-                                  onPressed: () {
-                                    final firstIncomplete = mod.lessons
-                                        .firstWhere(
-                                          (l) => !user.completedLessons
-                                              .contains(l.id),
-                                          orElse: () => mod.lessons.first,
-                                        );
-                                    context.go('/lesson/${firstIncomplete.id}');
-                                  },
-                                  child: Text(
+                                  child: Icon(
                                     modProgress == 1.0
-                                        ? 'Repasar módulo'
-                                        : 'Comenzar módulo',
-                                    style: TextStyle(fontSize: 14 * scale),
+                                        ? Icons.check
+                                        : Icons.code,
+                                    color: modProgress == 1.0
+                                        ? AppColors.successGreen
+                                        : AppColors.secondaryCyan,
                                   ),
                                 ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        mod.title,
+                                        style: AppTypography.headingSmall(
+                                          scale,
+                                        ),
+                                      ),
+                                      Text(
+                                        '$completedInMod de ${mod.lessons.length} lecciones',
+                                        style: AppTypography.caption(scale),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Text(
+                                  '$modPercent%',
+                                  style: TextStyle(
+                                    color: AppColors.secondaryCyan,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16 * scale,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              mod.description,
+                              style: AppTypography.bodyMuted(scale),
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton(
+                                onPressed: () {
+                                  final firstIncomplete = mod.lessons
+                                      .firstWhere(
+                                        (l) => !user.completedLessons
+                                            .contains(l.id),
+                                        orElse: () => mod.lessons.first,
+                                      );
+                                  context.go('/lesson/${firstIncomplete.id}');
+                                },
+                                child: Text(
+                                  modProgress == 1.0
+                                      ? 'Repasar módulo'
+                                      : 'Comenzar módulo',
+                                  style: TextStyle(fontSize: 14 * scale),
+                                ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ),
+                      ).animateEntrance(index: idx + 1),
                     );
-                  }).toList(),
+                  }),
                 );
               },
             ),
@@ -341,7 +365,8 @@ class DashboardScreen extends ConsumerWidget {
             Row(
               children: [
                 Expanded(
-                  child: Card(
+                  child: CosmicCard(
+                    padding: EdgeInsets.zero,
                     child: ListTile(
                       contentPadding: const EdgeInsets.all(16),
                       leading: CircleAvatar(
@@ -367,12 +392,13 @@ class DashboardScreen extends ConsumerWidget {
                       ),
                       onTap: () => _showFaqDialog(context, scale),
                     ),
-                  ),
+                  ).animateEntrance(index: modules.length + 1),
                 ),
                 if (!ResponsiveLayout.isCompact(context)) ...[
                   const SizedBox(width: 16),
                   Expanded(
-                    child: Card(
+                    child: CosmicCard(
+                      padding: EdgeInsets.zero,
                       child: ListTile(
                         contentPadding: const EdgeInsets.all(16),
                         leading: CircleAvatar(
@@ -398,7 +424,7 @@ class DashboardScreen extends ConsumerWidget {
                         ),
                         onTap: () => context.go('/mascot'),
                       ),
-                    ),
+                    ).animateEntrance(index: modules.length + 2),
                   ),
                 ],
               ],

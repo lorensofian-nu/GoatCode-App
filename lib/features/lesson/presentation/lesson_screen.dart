@@ -2,13 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/audio/sound_service.dart';
 import '../../../core/responsive/responsive_layout.dart';
 import '../../../core/storage/app_state_providers.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/widgets/cosmic_background.dart';
+import '../../../core/widgets/cosmic_confetti.dart';
 import '../../../core/widgets/lives_badge.dart';
+import '../../../core/widgets/mascot_speech_bubble.dart';
 import '../data/sample_lessons.dart';
 import '../domain/lesson_models.dart';
+import 'widgets/interactive_memory_visualizer.dart';
+import 'widgets/reading_progress_bar.dart';
 
 class LessonScreen extends ConsumerStatefulWidget {
   final String lessonId;
@@ -20,10 +27,42 @@ class LessonScreen extends ConsumerStatefulWidget {
 }
 
 class _LessonScreenState extends ConsumerState<LessonScreen> {
+  late final ScrollController _scrollController;
+  double _readingProgress = 0.0;
   int? _selectedChoiceIndex;
   bool _showFeedback = false;
   bool _isSuccess = false;
   bool _showHint = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final current = _scrollController.position.pixels;
+    if (maxScroll <= 0) {
+      if (_readingProgress != 1.0) {
+        setState(() => _readingProgress = 1.0);
+      }
+      return;
+    }
+    final progress = (current / maxScroll).clamp(0.0, 1.0);
+    if ((progress - _readingProgress).abs() > 0.01) {
+      setState(() => _readingProgress = progress);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,61 +126,32 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
           ),
           const SizedBox(width: 8),
         ],
+        bottom: ReadingProgressBar(progress: _readingProgress),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: ResponsiveLayout.horizontalPadding(context),
-            vertical: 20,
-          ),
-          child: ResponsiveContainer(
-            maxWidth: 820,
+      body: CosmicBackground(
+        child: SafeArea(
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                controller: _scrollController,
+                padding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveLayout.horizontalPadding(context),
+                  vertical: 20,
+                ),
+                child: ResponsiveContainer(
+                  maxWidth: 820,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (_showHint) ...[
-                  Card(
-                    color: const Color(0xFF231B0D),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      side: const BorderSide(
-                        color: AppColors.warningAmber,
-                        width: 1.2,
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.lightbulb,
-                            color: AppColors.warningAmber,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Pista de la Cabra:',
-                                  style: AppTypography.caption(scale).copyWith(
-                                    color: AppColors.warningAmber,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  lesson.hint,
-                                  style: AppTypography.body(scale),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: MascotSpeechBubble(
+                      title: 'Pista de GoatCode',
+                      text: lesson.hint,
+                      scale: scale,
                     ),
                   ),
-                  const SizedBox(height: 16),
                 ],
 
                 // Section 1: TEORÍA (Wireframe 03)
@@ -191,7 +201,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                       ],
                     ),
                   ),
-                ),
+                ).animateEntrance(index: 0),
                 const SizedBox(height: 20),
 
                 // Section 2: EJEMPLO DE CÓDIGO (Wireframe 03)
@@ -226,30 +236,21 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                               ),
                             ),
                             Text(
-                              'Código estructurado',
+                              'Código estructurado y simulación',
                               style: AppTypography.caption(scale),
                             ),
                           ],
                         ),
                         const SizedBox(height: 14),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(18),
-                          decoration: BoxDecoration(
-                            color: AppColors.codeBackground,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.surfaceBorder),
-                          ),
-                          child: SelectableText(
-                            lesson.codeSnippet,
-                            style: AppTypography.code(scale)
-                                .copyWith(color: AppColors.secondaryCyan),
-                          ),
+                        InteractiveMemoryVisualizer(
+                          code: lesson.codeSnippet,
+                          lessonId: lesson.id,
+                          scale: scale,
                         ),
                       ],
                     ),
                   ),
-                ),
+                ).animateEntrance(index: 1),
                 const SizedBox(height: 20),
 
                 // Section 3: PREGUNTA INTERACTIVA (Wireframe 03)
@@ -370,7 +371,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                       ],
                     ),
                   ),
-                ),
+                ).animateEntrance(index: 2),
                 const SizedBox(height: 24),
 
                 // Feedback Banner if evaluated
@@ -461,8 +462,15 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
             ),
           ),
         ),
-      ),
-    );
+        if (_showFeedback && _isSuccess)
+          const Positioned.fill(
+            child: CosmicConfetti(),
+          ),
+      ],
+    ),
+  ),
+),
+);
   }
 
   void _evaluate(Lesson lesson) {
@@ -473,6 +481,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     }
 
     final isCorrect = _selectedChoiceIndex == lesson.correctChoiceIndex;
+    final soundEnabled = ref.read(accessibilityProvider).soundEnabled;
     setState(() {
       _showFeedback = true;
       _isSuccess = isCorrect;
@@ -480,8 +489,10 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
 
     if (isCorrect) {
       ref.read(userProfileProvider.notifier).completeLesson(lesson.id);
+      SoundService.playSuccess(soundEnabled: soundEnabled);
     } else {
       ref.read(userProfileProvider.notifier).loseLife();
+      SoundService.playError(soundEnabled: soundEnabled);
     }
   }
 
@@ -496,7 +507,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
             ? 'assets/mascot/goat_shocked.png'
             : 'assets/mascot/goat_sad.png');
 
-    return Card(
+    final card = Card(
       color: isSuccess ? const Color(0xFF0F2B1C) : const Color(0xFF2D1418),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -528,7 +539,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                         : AppColors.errorSoft,
                     size: 48,
                   ),
-                ),
+                ).animateBreathing(),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -639,5 +650,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
         ),
       ),
     );
+
+    return isSuccess ? card.animateCelebrate() : card.animateShake();
   }
 }

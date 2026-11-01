@@ -1,10 +1,13 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../storage/app_state_providers.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_motion.dart';
 import '../theme/app_typography.dart';
+import '../widgets/cosmic_background.dart';
 import '../widgets/lives_badge.dart';
 import 'responsive_layout.dart';
 
@@ -56,19 +59,27 @@ class AdaptiveScaffold extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
-      body: Row(
-        children: [
-          if (!isCompact)
-            _buildNavigationRail(context, selectedIndex, user.streak, scale),
-          Expanded(
-            child: Column(
-              children: [
-                _buildTopAppBar(context, ref, user, scale, isCompact),
-                Expanded(child: body),
-              ],
+      body: CosmicBackground(
+        child: Row(
+          children: [
+            if (!isCompact)
+              _buildNavigationRail(
+                context,
+                ref,
+                selectedIndex,
+                user.streak,
+                scale,
+              ),
+            Expanded(
+              child: Column(
+                children: [
+                  _buildTopAppBar(context, ref, user, scale, isCompact),
+                  Expanded(child: body),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       bottomNavigationBar: isCompact
           ? NavigationBar(
@@ -126,7 +137,10 @@ class AdaptiveScaffold extends ConsumerWidget {
     double scale,
     bool isCompact,
   ) {
-    return Container(
+    final accessibility = ref.watch(accessibilityProvider);
+    final isGlass = accessibility.glassEffectEnabled;
+
+    final barContent = Container(
       padding: EdgeInsets.symmetric(
         horizontal: isCompact
             ? 12.0
@@ -134,9 +148,19 @@ class AdaptiveScaffold extends ConsumerWidget {
         vertical: 10,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F0C1C).withValues(alpha: 0.85),
+        color: !isGlass ? const Color(0xFF0F0C1C) : null,
+        gradient: isGlass
+            ? const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xF5130E26),
+                  Color(0xEA0D0A1C),
+                ],
+              )
+            : null,
         border: const Border(
-          bottom: BorderSide(color: AppColors.surfaceBorder, width: 1.0),
+          bottom: BorderSide(color: Color(0x33A882FF), width: 1.0),
         ),
       ),
       child: Row(
@@ -187,7 +211,7 @@ class AdaptiveScaffold extends ConsumerWidget {
                     Icons.local_fire_department,
                     color: AppColors.streakFire,
                     size: 18,
-                  ),
+                  ).animatePulsing(),
                   const SizedBox(width: 4),
                   Text(
                     isCompact ? '${user.streak}' : '${user.streak} días',
@@ -239,7 +263,44 @@ class AdaptiveScaffold extends ConsumerWidget {
             compact: isCompact,
             showCountdown: !isCompact,
           ),
-          const SizedBox(width: 4),
+          if (!isCompact) ...[
+            const SizedBox(width: 4),
+            IconButton(
+              tooltip: isGlass
+                  ? 'Cambiar a modo Obsidiana Mate (Sin reflejos)'
+                  : 'Cambiar a modo Cristal Cósmico',
+              iconSize: 22,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+              icon: Icon(
+                isGlass ? Icons.auto_awesome : Icons.layers_outlined,
+                color: isGlass
+                    ? AppColors.primaryNeonLight
+                    : AppColors.secondaryCyan,
+              ),
+              onPressed: () =>
+                  ref.read(accessibilityProvider.notifier).toggleGlassEffect(),
+            ),
+            const SizedBox(width: 4),
+            IconButton(
+              tooltip: ref.watch(accessibilityProvider).soundEnabled
+                  ? 'Silenciar efectos de sonido'
+                  : 'Activar efectos de sonido',
+              iconSize: 22,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+              icon: Icon(
+                ref.watch(accessibilityProvider).soundEnabled
+                    ? Icons.volume_up_rounded
+                    : Icons.volume_off_rounded,
+                color: ref.watch(accessibilityProvider).soundEnabled
+                    ? AppColors.secondaryCyan
+                    : AppColors.textMuted,
+              ),
+              onPressed: () =>
+                  ref.read(accessibilityProvider.notifier).toggleSound(),
+            ),
+          ],
           IconButton(
             tooltip: 'Ajustes de Accesibilidad',
             iconSize: 22,
@@ -254,22 +315,44 @@ class AdaptiveScaffold extends ConsumerWidget {
         ],
       ),
     );
+
+    return ClipRect(
+      child: isGlass
+          ? BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+              child: barContent,
+            )
+          : barContent,
+    );
   }
 
   Widget _buildNavigationRail(
     BuildContext context,
+    WidgetRef ref,
     int selectedIndex,
     int streak,
     double scale,
   ) {
     final isDesktop = ResponsiveLayout.isExpanded(context);
+    final accessibility = ref.watch(accessibilityProvider);
+    final isGlass = accessibility.glassEffectEnabled;
 
-    return Container(
+    final railContent = Container(
       width: isDesktop ? 220 : 76,
-      decoration: const BoxDecoration(
-        color: Color(0xFF0F0C1C),
-        border: Border(
-          right: BorderSide(color: AppColors.surfaceBorder, width: 1.0),
+      decoration: BoxDecoration(
+        color: !isGlass ? const Color(0xFF0F0C1C) : null,
+        gradient: isGlass
+            ? const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xF5130E26),
+                  Color(0xEA0D0A1C),
+                ],
+              )
+            : null,
+        border: const Border(
+          right: BorderSide(color: Color(0x33A882FF), width: 1.0),
         ),
       ),
       child: Column(
@@ -400,6 +483,15 @@ class AdaptiveScaffold extends ConsumerWidget {
           const SizedBox(height: 16),
         ],
       ),
+    );
+
+    return ClipRect(
+      child: isGlass
+          ? BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+              child: railContent,
+            )
+          : railContent,
     );
   }
 

@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../core/responsive/responsive_layout.dart';
 import '../../../core/storage/app_state_providers.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/widgets/cosmic_card.dart';
 import '../../lesson/data/sample_lessons.dart';
 
 class CatalogScreen extends ConsumerWidget {
@@ -145,7 +147,7 @@ class CatalogScreen extends ConsumerWidget {
                                   size: 80,
                                   color: AppColors.secondaryCyan,
                                 ),
-                          ),
+                          ).animateBreathing(),
                         ],
                       ],
                     ),
@@ -178,7 +180,7 @@ class CatalogScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-            ),
+            ).animateEntrance(index: 0),
             const SizedBox(height: 32),
 
             Text(
@@ -305,46 +307,45 @@ class CatalogScreen extends ConsumerWidget {
     required String badge,
     required double width,
     required double scale,
+    int index = 1,
   }) {
     return SizedBox(
       width: width,
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.warningAmber.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  badge,
-                  style: TextStyle(
-                    color: AppColors.warningAmber,
-                    fontSize: 11 * scale,
-                    fontWeight: FontWeight.w700,
-                  ),
+      child: CosmicCard(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.warningAmber.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                badge,
+                style: TextStyle(
+                  color: AppColors.warningAmber,
+                  fontSize: 11 * scale,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 12),
-              Text(title, style: AppTypography.headingSmall(scale)),
-              const SizedBox(height: 8),
-              Text(description, style: AppTypography.bodyMuted(scale)),
-              const SizedBox(height: 16),
-              OutlinedButton(
-                onPressed: null,
-                child: Text(
-                  'Bloqueado',
-                  style: TextStyle(fontSize: 13 * scale),
-                ),
+            ),
+            const SizedBox(height: 12),
+            Text(title, style: AppTypography.headingSmall(scale)),
+            const SizedBox(height: 8),
+            Text(description, style: AppTypography.bodyMuted(scale)),
+            const SizedBox(height: 16),
+            OutlinedButton(
+              onPressed: null,
+              child: Text(
+                'Bloqueado',
+                style: TextStyle(fontSize: 13 * scale),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ),
+      ).animateEntrance(index: index),
     );
   }
 }

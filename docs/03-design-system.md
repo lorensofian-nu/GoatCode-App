@@ -69,5 +69,55 @@
 1. **Escalado tipográfico sin desbordamientos:** Los contenedores usan `Flexible`, `SingleChildScrollView` o auto-sizing para permitir que el texto crezca hasta 1.5x sin provocar errores de `RenderFlex overflowed`.
 2. **Navegación por teclado y foco visible:** Todo elemento interactivo (botones de lección, opciones de respuesta, tabs de navegación) cuenta con indicador de foco resaltado con halo cian (`#00E5FF`).
 3. **Semántica para lectores de pantalla:** Uso de widgets `Semantics` con descripciones en español en iconos de racha, logros y progreso.
-4. **Respeto a reducción de movimiento:** Si el usuario tiene activado en su sistema operativo "reducir movimiento", las partículas y animaciones de brillo se detienen suavemente.
+4. **Respeto a reducción de movimiento:** Si el usuario tiene activado en su sistema operativo "reducir movimiento", las partículas y animaciones de brillo se detienen suavemente (`MediaQuery.disableAnimationsOf(context)`).
+
+## Tokens de Motion UI y Animación (ADR-006)
+
+| Token | Valor / Duración | Curva | Propósito |
+|---|---|---|---|
+| `durationMicro` | `150 ms` | `Curves.easeOutQuad` | Hover, selección inmediata, cambios de estado en botones y toggles. |
+| `durationMedium` | `300 ms` | `Curves.easeOutCubic` | Expansión de acordeones, reveals de feedback, cambio de tarjetas. |
+| `durationMacro` | `500 ms` | `Curves.easeOutCubic` | Entrada escalonada de listas y pantallas (*staggered entrance*). |
+| `durationCelebrate`| `600 ms` | `Curves.elasticOut` | Insignias desbloqueadas, medallas y finalización con éxito de lección. |
+| `durationBreathing`| `2400 ms` | `Curves.easeInOut` | Animación idle sutil y continua de la mascota GoatCode. |
+
+## Componentes Visuales Clave
+
+1. **`CodeSnippetBlock`:** Bloque de código con coloreado léxico (keywords, strings, números, comentarios), números de línea monospace, estilo terminal oscuro y botón de copiado con retroalimentación instantánea.
+2. **`CosmicBackground`:** Fondo envolvente con orbes de luz radiales difusos (violeta `#8A4FFF` superior izquierdo y cian `#00E5FF` inferior derecho) que crean profundidad cósmica.
+3. **`MascotSpeechBubble`:** Bocadillo de diálogo dinámico estilo cómic integrado junto a la mascota con consejos y pistas en español.
+4. **`CosmicConfetti`:** Ráfaga de confeti y partículas cósmicas (estrellas y discos cian, púrpura, ámbar y esmeralda) renderizada en Canvas al acertar lecciones.
+5. **`InteractiveMemoryVisualizer`:** Visualizador de memoria RAM interactivo con cajas de variables animadas paso a paso.
+6. **`_SinuousConnectorPainter`:** Trazado de ruta ondulado con nodos luminosos intermedios en la hoja de ruta.
+
+## Sistema Glassmorphism y Efecto Espejo Cósmico Calibrado (High-Contrast Frosted Mirror)
+
+Para garantizar un contraste óptico superior (WCAG AAA) y máxima legibilidad de los textos y códigos, los valores del sistema de cristal esmerilado fueron afinados tras pruebas visuales:
+
+1. **Desenfocado Óptico Calibrado (`BackdropFilter`):**
+   - Tarjetas (`CosmicCard`): `ImageFilter.blur(sigmaX: 7, sigmaY: 7)` (óptica limpia sin sangrado difuso que nuble el texto).
+   - Shell y Barras de Navegación (`AdaptiveScaffold`): `ImageFilter.blur(sigmaX: 8, sigmaY: 8)`.
+2. **Borde Especular Biselado Sutil (`_SpecularBorderPainter`):**
+   - Borde con gradiente lineal a 135° de 1.0 px: arista superior con luz blanca atenuada (`rgba(255, 255, 255, 0.22)`) fundiéndose suavemente hacia `0.02` en la base. En hover, se intensifica a `0.45` de reflectancia con 1.3 px.
+3. **Fondo de Obsidiana Cristalina de Alto Contraste:**
+   - Base sólida y oscura al 93%-96% de opacidad (`Color(0xF0151128)` y `Color(0xF70C091A)`), con solo un sutil toque de 4% de luz blanca en el vértice extremo superior (stop 0.12), asegurando que el 88% del área de texto tenga un fondo oscuro uniforme y perfecto.
+4. **Destello Diagonal Suave en Hover (`_LightSheenPainter`):**
+   - Franja especular rápida con reflectancia pico amortiguada al 7% (`alpha: 0.07`), permitiendo que el texto permanezca 100% nítido y legible durante la animación de hover.
+5. **Sombras Cáusticas Refinadas:**
+   - Sombra dual: oclusión ambiental de 8-14 px de radio y halo neón amortiguado (alfa 0.06 reposo / 0.18 hover) para evitar halos invasivos.
+7. **`ReadingProgressBar`:** Barra de progreso horizontal fija en el AppBar de las lecciones con degradado neón (violeta a cian) y halo luminoso en la cabeza del avance, indicando la lectura de la teoría.
+8. **`MascotStreakAura`:** Halo cáustico adaptativo de la mascota según la racha acumulada:
+   - *Racha 0–2 días:* Tier 1 "Aura Cósmica" (Violeta Neón `#8A4FFF` + Cian `#00E5FF`).
+   - *Racha 3–6 días:* Tier 2 "Aura de Fuego" (Fuego Ámbar `#FF7A00` + Destello Solar `#FFB300`).
+   - *Racha 7+ días:* Tier 3 "Aura Solar Mítica" (Oro Radiante `#FFD700` + Destellos Estelares).
+9. **`SoundService` (Audio Sintético Web):**
+   - Síntesis en tiempo real con Web Audio API (osciladores senoidales/triangulares), con 0 bytes de descarga, 100% offline y latencia 0 ms.
+   - Sonido de acierto (arpegio cósmico ascendente C5-E5-G5), error (tono amortiguado 220Hz a 140Hz) y racha solar (arpegio brillante D5-A5-D6).
+   - Interruptor de silenciado directo en la barra superior (`AdaptiveScaffold`) y en Ajustes (`ProfileScreen`).
+10. **Interruptor de Modo "Cristal Cósmico" vs. "Obsidiana Mate" (Ultra-Legible):**
+    - Alternador disponible en la barra superior (`AdaptiveScaffold`) y en Ajustes de Accesibilidad (`ProfileScreen`).
+    - En modo Obsidiana Mate (`glassEffectEnabled == false`), `CosmicCard` y las barras de navegación omiten `BackdropFilter` y gradientes de luz, empleando fondos sólidos `#141026` y bordes limpios, eliminando el 100% de reflejos para estudio bajo luz solar o fatiga visual.
+11. **Micro-Sombras de Contraste Tipográfico (`TextShadow` de Protección):**
+    - Todos los tokens de `AppTypography` incorporan `contrastShadow` y `subtleContrastShadow` (sombras de oclusión negra con offset y desenfoque óptico), logrando separación perfecta entre cada letra y cualquier elemento o halo de fondo.
+
 

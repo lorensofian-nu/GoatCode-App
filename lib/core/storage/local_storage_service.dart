@@ -28,6 +28,7 @@ class LocalStorageService {
   static const _keyTextScale = 'goat_pref_text_scale';
   static const _keyHighContrast = 'goat_pref_high_contrast';
   static const _keySoundEnabled = 'goat_pref_sound_enabled';
+  static const _keyGlassEffectEnabled = 'goat_pref_glass_effect_enabled';
   static const _keyLives = 'goat_user_lives';
   static const _keyLastLifeLossTimestamp = 'goat_last_life_loss_timestamp';
 
@@ -128,6 +129,10 @@ class LocalStorageService {
   bool getSoundEnabled() => _prefs.getBool(_keySoundEnabled) ?? true;
   Future<bool> setSoundEnabled(bool value) =>
       _prefs.setBool(_keySoundEnabled, value);
+
+  bool getGlassEffectEnabled() => _prefs.getBool(_keyGlassEffectEnabled) ?? true;
+  Future<bool> setGlassEffectEnabled(bool value) =>
+      _prefs.setBool(_keyGlassEffectEnabled, value);
 
   // Lives System (5 vidas y recarga temporal pasiva)
   int getLives() {
