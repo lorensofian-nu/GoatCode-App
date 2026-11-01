@@ -1,15 +1,15 @@
 # Estado del proyecto — GoatCode
 
 - **Última actualización:** 2026-10-31
-- **Milestone actual:** Ciclo de Desarrollo Concluido (MVP + Fases A, B y C)
-- **Estado general:** CICLO DE DESARROLLO CONCLUIDO EXITOSAMENTE (100% DONE)
+- **Milestone actual:** Feature Vidas (`feature/lives-system`)
+- **Estado general:** FEATURE DE VIDAS IMPLEMENTADA Y VERIFICADA (100% DONE)
 
 ## Hecho
 
 1. Lectura e interpretación profunda del prompt maestro (`MASTER_PROMPT.md`) y reglas (`GEMINI.md`).
 2. Inspección visual directa y exhaustiva de los 6 wireframes y las 9 referencias de personajes de cabra.
 3. Especificación de requisitos (`docs/01-requirements.md`), journeys (`docs/02-user-journeys.md`) y sistema de diseño cósmico (`docs/03-design-system.md`).
-4. Arquitectura y ADR-001 a ADR-005 formalmente aprobadas (`docs/08-decision-log.md`).
+4. Arquitectura y ADR-001 a ADR-006 formalmente aprobadas (`docs/08-decision-log.md`).
 5. Bootstrap Flutter Web, shell adaptativo (`adaptive_scaffold.dart`) y persistencia local (`local_storage_service.dart`).
 6. Suite de calidad: `flutter analyze` (0 lints), `flutter test` (9/9 pass) y build de producción en `build/web/`.
 7. Servidor web local SPA en `tools/server.js` activo en `http://localhost:8080`.
@@ -25,10 +25,16 @@
     - Presets de prompts en `tools/asset_pipeline/prompts/` (isla 3D, insignias de lógica/racha, cabra maga).
     - Soporte para API real de Gemini Imagen y modo offline `--mock`.
     - Registro y sincronización automática en `docs/06-asset-manifest.csv`.
+11. **Feature Vidas (`feature/lives-system`):**
+    - Sistema de 5 vidas persistidas en `LocalStorageService` con recarga pasiva por paso del tiempo (1 vida cada 15 min).
+    - Reducción de 1 vida por intento fallido en los retos prácticos de lecciones interactivos.
+    - Componente reusable `LivesBadge` con contador y modal `showLivesDialog` accesible con desglose visual de corazones y temporizador en formato MM:SS.
+    - Integración en `AdaptiveScaffold` (barra superior), `LessonScreen` (AppBar y banner de feedback), `DashboardScreen` y `ProfileScreen`.
+    - Modal de aviso y pausa pedagógica amigable cuando las vidas llegan a 0.
 
 ## En curso
 
-- Ninguno. Ciclo de desarrollo cerrado satisfactoriamente por instrucción del usuario.
+- Verificación y entrega de la rama `feature/lives-system` al usuario.
 
 ## Pendiente (Fases Futuras / Mantenimiento)
 

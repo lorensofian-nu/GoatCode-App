@@ -34,5 +34,6 @@
 | **TSK-017** | Ampliación curricular a 5 módulos completos con 12 lecciones interactivas | `learning-designer` | M | TSK-012 | **DONE** |
 | **TSK-018** | Implementación del pipeline privado desacoplado de assets con Gemini API | `flutter-architect` | M | ADR-005 | **DONE** |
 | **TSK-019** | Prevención de caché y desregistro de Service Workers para actualizaciones web instantáneas | `flutter-developer` | S | TSK-015 | **DONE** |
+| **TSK-020** | Implementación del sistema de 5 vidas y recarga temporal en rama feature | `flutter-developer` | M | ADR-006 | **DONE** |
 
 

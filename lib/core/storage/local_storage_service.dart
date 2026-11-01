@@ -28,6 +28,11 @@ class LocalStorageService {
   static const _keyTextScale = 'goat_pref_text_scale';
   static const _keyHighContrast = 'goat_pref_high_contrast';
   static const _keySoundEnabled = 'goat_pref_sound_enabled';
+  static const _keyLives = 'goat_user_lives';
+  static const _keyLastLifeLossTimestamp = 'goat_last_life_loss_timestamp';
+
+  static const int maxLives = 5;
+  static const int lifeRegenMinutes = 15;
 
   // Username
   String? getUsername() => _prefs.getString(_keyUsername);
@@ -123,6 +128,93 @@ class LocalStorageService {
   bool getSoundEnabled() => _prefs.getBool(_keySoundEnabled) ?? true;
   Future<bool> setSoundEnabled(bool value) =>
       _prefs.setBool(_keySoundEnabled, value);
+
+  // Lives System (5 vidas y recarga temporal pasiva)
+  int getLives() {
+    final stored = _prefs.getInt(_keyLives) ?? maxLives;
+    if (stored >= maxLives) {
+      if (_prefs.containsKey(_keyLastLifeLossTimestamp)) {
+        _prefs.remove(_keyLastLifeLossTimestamp);
+      }
+      return maxLives;
+    }
+
+    final lastTimestamp = _prefs.getInt(_keyLastLifeLossTimestamp);
+    if (lastTimestamp == null) {
+      return stored;
+    }
+
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final elapsedMs = now - lastTimestamp;
+    if (elapsedMs <= 0) return stored;
+
+    final regenIntervalMs = lifeRegenMinutes * 60 * 1000;
+    final livesGained = elapsedMs ~/ regenIntervalMs;
+
+    if (livesGained > 0) {
+      final updatedLives = (stored + livesGained).clamp(0, maxLives);
+      _prefs.setInt(_keyLives, updatedLives);
+
+      if (updatedLives >= maxLives) {
+        _prefs.remove(_keyLastLifeLossTimestamp);
+      } else {
+        final remainderMs = elapsedMs % regenIntervalMs;
+        _prefs.setInt(_keyLastLifeLossTimestamp, now - remainderMs);
+      }
+      return updatedLives;
+    }
+
+    return stored;
+  }
+
+  int getSecondsToNextLife() {
+    final current = getLives();
+    if (current >= maxLives) return 0;
+
+    final lastTimestamp = _prefs.getInt(_keyLastLifeLossTimestamp);
+    if (lastTimestamp == null) return lifeRegenMinutes * 60;
+
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final elapsedMs = now - lastTimestamp;
+    if (elapsedMs < 0) return lifeRegenMinutes * 60;
+
+    final regenIntervalMs = lifeRegenMinutes * 60 * 1000;
+    final remainingMs = regenIntervalMs - (elapsedMs % regenIntervalMs);
+    final seconds = (remainingMs / 1000).ceil();
+    return seconds.clamp(0, lifeRegenMinutes * 60);
+  }
+
+  Future<int> loseLife() async {
+    final current = getLives();
+    if (current <= 0) return 0;
+
+    final newLives = current - 1;
+    await _prefs.setInt(_keyLives, newLives);
+
+    if (current == maxLives || !_prefs.containsKey(_keyLastLifeLossTimestamp)) {
+      await _prefs.setInt(
+        _keyLastLifeLossTimestamp,
+        DateTime.now().millisecondsSinceEpoch,
+      );
+    }
+    return newLives;
+  }
+
+  Future<int> addLives([int count = 1]) async {
+    final current = getLives();
+    final newLives = (current + count).clamp(0, maxLives);
+    await _prefs.setInt(_keyLives, newLives);
+
+    if (newLives >= maxLives) {
+      await _prefs.remove(_keyLastLifeLossTimestamp);
+    }
+    return newLives;
+  }
+
+  Future<void> refillLives() async {
+    await _prefs.setInt(_keyLives, maxLives);
+    await _prefs.remove(_keyLastLifeLossTimestamp);
+  }
 
   Future<bool> clearAll() => _prefs.clear();
 }

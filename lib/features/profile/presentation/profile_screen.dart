@@ -131,6 +131,12 @@ class ProfileScreen extends ConsumerWidget {
                                 scale,
                               ),
                               _statChip(
+                                Icons.favorite,
+                                '${user.lives}/${user.maxLives} vidas',
+                                const Color(0xFFFF4B4B),
+                                scale,
+                              ),
+                              _statChip(
                                 Icons.check_circle,
                                 '$completedCount lecciones',
                                 AppColors.successGreen,

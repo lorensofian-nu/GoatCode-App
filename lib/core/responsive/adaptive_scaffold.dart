@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../storage/app_state_providers.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
+import '../widgets/lives_badge.dart';
 import 'responsive_layout.dart';
 
 class AdaptiveScaffold extends ConsumerWidget {
@@ -230,6 +231,11 @@ class AdaptiveScaffold extends ConsumerWidget {
                 ),
               ],
             ),
+          ),
+          const SizedBox(width: 8),
+          LivesBadge(
+            compact: isCompact,
+            showCountdown: !isCompact,
           ),
           const SizedBox(width: 4),
           IconButton(

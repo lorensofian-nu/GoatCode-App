@@ -6,6 +6,7 @@ import '../../../core/responsive/responsive_layout.dart';
 import '../../../core/storage/app_state_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/widgets/lives_badge.dart';
 import '../data/sample_lessons.dart';
 import '../domain/lesson_models.dart';
 
@@ -27,6 +28,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   @override
   Widget build(BuildContext context) {
     final lesson = SampleLessons.getLessonById(widget.lessonId);
+    final user = ref.watch(userProfileProvider);
     final accessibility = ref.watch(accessibilityProvider);
     final scale = accessibility.textScale.scaleFactor;
 
@@ -73,6 +75,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
           ],
         ),
         actions: [
+          const LivesBadge(compact: true, showCountdown: false),
+          const SizedBox(width: 4),
           IconButton(
             tooltip: 'Ver pista',
             icon: Icon(
@@ -375,16 +379,78 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                   const SizedBox(height: 24),
                 ],
 
+                // Out of lives warning banner if user has 0 lives
+                if (user.lives == 0 && !_showFeedback) ...[
+                  Card(
+                    color: const Color(0xFF2A1015),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      side: const BorderSide(
+                        color: Color(0xFFFF4B4B),
+                        width: 1.2,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.favorite_border,
+                            color: Color(0xFFFF4B4B),
+                            size: 28,
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '¡Sin vidas disponibles!',
+                                  style: TextStyle(
+                                    color: const Color(0xFFFF4B4B),
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14 * scale,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Próxima vida en: ${user.formattedTimeUntilNextLife}. Espera la recarga o recarga tus vidas.',
+                                  style: AppTypography.caption(scale),
+                                ),
+                              ],
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () => showLivesDialog(context, ref),
+                            child: const Text('Recargar'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+
                 // Action Button
                 if (!_showFeedback)
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _selectedChoiceIndex == null
-                          ? null
-                          : () => _evaluate(lesson),
+                      onPressed: user.lives == 0
+                          ? () => showLivesDialog(context, ref)
+                          : (_selectedChoiceIndex == null
+                              ? null
+                              : () => _evaluate(lesson)),
+                      style: user.lives == 0
+                          ? ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2E1922),
+                              foregroundColor: const Color(0xFFFF5964),
+                            )
+                          : null,
                       child: Text(
-                        'Comprobar respuesta',
+                        user.lives == 0
+                            ? 'Sin vidas (Toca para recargar)'
+                            : 'Comprobar respuesta',
                         style: TextStyle(fontSize: 16 * scale),
                       ),
                     ),
@@ -400,6 +466,12 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   }
 
   void _evaluate(Lesson lesson) {
+    final user = ref.read(userProfileProvider);
+    if (user.lives <= 0) {
+      showLivesDialog(context, ref);
+      return;
+    }
+
     final isCorrect = _selectedChoiceIndex == lesson.correctChoiceIndex;
     setState(() {
       _showFeedback = true;
@@ -408,14 +480,21 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
 
     if (isCorrect) {
       ref.read(userProfileProvider.notifier).completeLesson(lesson.id);
+    } else {
+      ref.read(userProfileProvider.notifier).loseLife();
     }
   }
 
   Widget _buildFeedbackCard(Lesson lesson, double scale) {
     final isSuccess = _isSuccess;
+    final user = ref.watch(userProfileProvider);
+    final isOutOfLives = !isSuccess && user.lives == 0;
+
     final mascotImage = isSuccess
         ? 'assets/mascot/goat_happy.png'
-        : 'assets/mascot/goat_sad.png';
+        : (isOutOfLives
+            ? 'assets/mascot/goat_shocked.png'
+            : 'assets/mascot/goat_sad.png');
 
     return Card(
       color: isSuccess ? const Color(0xFF0F2B1C) : const Color(0xFF2D1418),
@@ -441,7 +520,9 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                   errorBuilder: (context, error, stackTrace) => Icon(
                     isSuccess
                         ? Icons.celebration
-                        : Icons.sentiment_dissatisfied,
+                        : (isOutOfLives
+                            ? Icons.heart_broken
+                            : Icons.sentiment_dissatisfied),
                     color: isSuccess
                         ? AppColors.successGreen
                         : AppColors.errorSoft,
@@ -456,7 +537,9 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                       Text(
                         isSuccess
                             ? '¡Respuesta Correcta! (+100 XP)'
-                            : 'Casi lo logras...',
+                            : (isOutOfLives
+                                ? '¡Te has quedado sin vidas!'
+                                : 'Casi lo logras... (-1 Vida ❤️)'),
                         style: TextStyle(
                           color: isSuccess
                               ? AppColors.successGreen
@@ -469,9 +552,32 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                       Text(
                         isSuccess
                             ? lesson.explanationSuccess
-                            : lesson.explanationFailure,
+                            : (isOutOfLives
+                                ? 'Has agotado tus 5 vidas. Tu cabra se está tomando un descanso. Tus vidas se recargarán automáticamente con el tiempo o puedes recargarlas ahora.'
+                                : lesson.explanationFailure),
                         style: AppTypography.body(scale),
                       ),
+                      if (!isSuccess && !isOutOfLives) ...[
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.favorite,
+                              color: Color(0xFFFF4B4B),
+                              size: 16,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Te quedan ${user.lives} vidas.',
+                              style: TextStyle(
+                                color: const Color(0xFFFF7B7B),
+                                fontSize: 13 * scale,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -481,17 +587,31 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                if (!isSuccess)
-                  OutlinedButton(
-                    onPressed: () {
-                      setState(() {
-                        _showFeedback = false;
-                        _selectedChoiceIndex = null;
-                        _showHint = true;
-                      });
-                    },
-                    child: const Text('Intentar de nuevo'),
-                  ),
+                if (!isSuccess) ...[
+                  if (isOutOfLives) ...[
+                    OutlinedButton.icon(
+                      onPressed: () => showLivesDialog(context, ref),
+                      icon: const Icon(Icons.flash_on, size: 16),
+                      label: const Text('Recargar vidas'),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () => context.go('/dashboard'),
+                      child: const Text('Volver al Dashboard'),
+                    ),
+                  ] else ...[
+                    OutlinedButton(
+                      onPressed: () {
+                        setState(() {
+                          _showFeedback = false;
+                          _selectedChoiceIndex = null;
+                          _showHint = true;
+                        });
+                      },
+                      child: const Text('Intentar de nuevo'),
+                    ),
+                  ],
+                ],
                 if (isSuccess) ...[
                   OutlinedButton(
                     onPressed: () => context.go('/dashboard'),
