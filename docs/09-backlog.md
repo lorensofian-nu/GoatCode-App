@@ -30,5 +30,9 @@
 | **TSK-013** | Implementación de persistencia de racha diaria, XP y medallas | `flutter-developer` | M | TSK-012 | **DONE** |
 | **TSK-014** | Implementación de personalizador de cabra y panel de accesibilidad | `flutter-developer` | M | TSK-010 | **DONE** |
 | **TSK-015** | Ejecución de suite de tests, auditoría responsive y build web final | `quality-auditor` | M | M4 | **DONE** |
+| **TSK-016** | Eliminación de fondos blancos y canal alfa transparente en los 9 assets de cabra | `asset-artist` | S | TSK-014 | **DONE** |
+| **TSK-017** | Ampliación curricular a 5 módulos completos con 12 lecciones interactivas | `learning-designer` | M | TSK-012 | **DONE** |
+| **TSK-018** | Implementación del pipeline privado desacoplado de assets con Gemini API | `flutter-architect` | M | ADR-005 | **DONE** |
+| **TSK-019** | Prevención de caché y desregistro de Service Workers para actualizaciones web instantáneas | `flutter-developer` | S | TSK-015 | **DONE** |
 
 
