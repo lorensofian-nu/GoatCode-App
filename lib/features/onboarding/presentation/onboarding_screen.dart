@@ -58,20 +58,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: Image.asset(
-                          'assets/mascot/goat_teacher.jpeg',
-                          width: 140,
-                          height: 140,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(
-                                Icons.pets,
-                                color: AppColors.primaryNeon,
-                                size: 80,
-                              ),
-                        ),
+                      Image.asset(
+                        'assets/mascot/goat_teacher.png',
+                        width: 140,
+                        height: 140,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
+                              Icons.pets,
+                              color: AppColors.primaryNeon,
+                              size: 80,
+                            ),
                       ),
                       const SizedBox(height: 24),
                       Text(

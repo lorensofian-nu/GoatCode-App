@@ -414,8 +414,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   Widget _buildFeedbackCard(Lesson lesson, double scale) {
     final isSuccess = _isSuccess;
     final mascotImage = isSuccess
-        ? 'assets/mascot/goat_happy.jpeg'
-        : 'assets/mascot/goat_sad.jpeg';
+        ? 'assets/mascot/goat_happy.png'
+        : 'assets/mascot/goat_sad.png';
 
     return Card(
       color: isSuccess ? const Color(0xFF0F2B1C) : const Color(0xFF2D1418),
@@ -433,22 +433,19 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
           children: [
             Row(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image.asset(
-                    mascotImage,
-                    width: 70,
-                    height: 70,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Icon(
-                      isSuccess
-                          ? Icons.celebration
-                          : Icons.sentiment_dissatisfied,
-                      color: isSuccess
-                          ? AppColors.successGreen
-                          : AppColors.errorSoft,
-                      size: 48,
-                    ),
+                Image.asset(
+                  mascotImage,
+                  width: 70,
+                  height: 70,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) => Icon(
+                    isSuccess
+                        ? Icons.celebration
+                        : Icons.sentiment_dissatisfied,
+                    color: isSuccess
+                        ? AppColors.successGreen
+                        : AppColors.errorSoft,
+                    size: 48,
                   ),
                 ),
                 const SizedBox(width: 16),

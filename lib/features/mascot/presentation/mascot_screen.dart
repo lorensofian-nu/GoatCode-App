@@ -21,26 +21,56 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
       'id': 'idle',
       'name': 'Cabra Natural',
       'desc': 'Aspecto original, atenta y lista para aprender.',
-      'asset': 'assets/mascot/goat_idle.jpeg',
+      'asset': 'assets/mascot/goat_idle.png',
     },
     {
       'id': 'teacher',
       'name': 'Cabra Profesora',
       'desc':
           'Con gafas y bufanda roja. Ideal para explicar conceptos complejos.',
-      'asset': 'assets/mascot/goat_teacher.jpeg',
+      'asset': 'assets/mascot/goat_teacher.png',
     },
     {
       'id': 'rocker',
       'name': 'Cabra Rockera',
       'desc': 'Camiseta "The GOATS". Pasión y energía para programar.',
-      'asset': 'assets/mascot/goat_rocker.jpeg',
+      'asset': 'assets/mascot/goat_rocker.png',
     },
     {
       'id': 'baby',
       'name': 'Cabra Bebé',
       'desc': 'Con gorrito de dormir. Para quienes dan sus primeros pasos.',
-      'asset': 'assets/mascot/goat_baby.jpeg',
+      'asset': 'assets/mascot/goat_baby.png',
+    },
+    {
+      'id': 'happy',
+      'name': 'Cabra Feliz',
+      'desc': 'Sonriente y entusiasmada por cada línea de código resuelta.',
+      'asset': 'assets/mascot/goat_happy.png',
+    },
+    {
+      'id': 'shy',
+      'name': 'Cabra Tímida',
+      'desc': 'Tranquila y reflexiva. Prefiere pensar antes de ejecutar.',
+      'asset': 'assets/mascot/goat_shy.png',
+    },
+    {
+      'id': 'shocked',
+      'name': 'Cabra Asombrada',
+      'desc': 'Sorprendida al descubrir el poder de la programación.',
+      'asset': 'assets/mascot/goat_shocked.png',
+    },
+    {
+      'id': 'grumpy',
+      'name': 'Cabra Gruñona',
+      'desc': 'Concentrada cazando errores y depurando bugs.',
+      'asset': 'assets/mascot/goat_grumpy.png',
+    },
+    {
+      'id': 'sad',
+      'name': 'Cabra Comprensiva',
+      'desc': 'Empática cuando un test no pasa, lista para reintentar.',
+      'asset': 'assets/mascot/goat_sad.png',
     },
   ];
 
@@ -122,20 +152,17 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
                           ),
                         ],
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: Image.asset(
-                          activeSkinData['asset']!,
-                          width: 200,
-                          height: 200,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(
-                                Icons.pets,
-                                size: 100,
-                                color: AppColors.primaryNeon,
-                              ),
-                        ),
+                      child: Image.asset(
+                        activeSkinData['asset']!,
+                        width: 200,
+                        height: 200,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
+                              Icons.pets,
+                              size: 100,
+                              color: AppColors.primaryNeon,
+                            ),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -191,16 +218,13 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
                           ),
                           child: Row(
                             children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Image.asset(
-                                  skin['asset']!,
-                                  width: 48,
-                                  height: 48,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(Icons.pets),
-                                ),
+                              Image.asset(
+                                skin['asset']!,
+                                width: 48,
+                                height: 48,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.pets),
                               ),
                               const SizedBox(width: 14),
                               Expanded(

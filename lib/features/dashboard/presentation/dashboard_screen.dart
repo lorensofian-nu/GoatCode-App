@@ -24,13 +24,24 @@ class DashboardScreen extends ConsumerWidget {
         : 0.0;
     final percentInt = (progress * 100).toInt();
 
-    String mascotAsset = 'assets/mascot/goat_idle.jpeg';
-    if (user.mascotSkin == 'teacher') {
-      mascotAsset = 'assets/mascot/goat_teacher.jpeg';
-    } else if (user.mascotSkin == 'rocker') {
-      mascotAsset = 'assets/mascot/goat_rocker.jpeg';
-    } else if (user.mascotSkin == 'happy') {
-      mascotAsset = 'assets/mascot/goat_happy.jpeg';
+    String mascotAsset = 'assets/mascot/goat_idle.png';
+    final skin = user.mascotSkin;
+    if (skin == 'teacher') {
+      mascotAsset = 'assets/mascot/goat_teacher.png';
+    } else if (skin == 'rocker') {
+      mascotAsset = 'assets/mascot/goat_rocker.png';
+    } else if (skin == 'happy') {
+      mascotAsset = 'assets/mascot/goat_happy.png';
+    } else if (skin == 'baby') {
+      mascotAsset = 'assets/mascot/goat_baby.png';
+    } else if (skin == 'sad') {
+      mascotAsset = 'assets/mascot/goat_sad.png';
+    } else if (skin == 'shy') {
+      mascotAsset = 'assets/mascot/goat_shy.png';
+    } else if (skin == 'grumpy') {
+      mascotAsset = 'assets/mascot/goat_grumpy.png';
+    } else if (skin == 'shocked') {
+      mascotAsset = 'assets/mascot/goat_shocked.png';
     }
 
     return SingleChildScrollView(
@@ -139,20 +150,17 @@ class DashboardScreen extends ConsumerWidget {
                     ),
                     if (!ResponsiveLayout.isCompact(context)) ...[
                       const SizedBox(width: 24),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: Image.asset(
-                          mascotAsset,
-                          width: 160,
-                          height: 160,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(
-                                Icons.pets,
-                                color: AppColors.primaryNeon,
-                                size: 80,
-                              ),
-                        ),
+                      Image.asset(
+                        mascotAsset,
+                        width: 160,
+                        height: 160,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
+                              Icons.pets,
+                              color: AppColors.primaryNeon,
+                              size: 80,
+                            ),
                       ),
                     ],
                   ],

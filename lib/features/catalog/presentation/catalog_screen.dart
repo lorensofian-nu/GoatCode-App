@@ -134,20 +134,17 @@ class CatalogScreen extends ConsumerWidget {
                         ),
                         if (!ResponsiveLayout.isCompact(context)) ...[
                           const SizedBox(width: 24),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Image.asset(
-                              'assets/mascot/goat_teacher.jpeg',
-                              width: 150,
-                              height: 150,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(
-                                    Icons.code,
-                                    size: 80,
-                                    color: AppColors.secondaryCyan,
-                                  ),
-                            ),
+                          Image.asset(
+                            'assets/mascot/goat_teacher.png',
+                            width: 150,
+                            height: 150,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(
+                                  Icons.code,
+                                  size: 80,
+                                  color: AppColors.secondaryCyan,
+                                ),
                           ),
                         ],
                       ],
@@ -234,19 +231,15 @@ class CatalogScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(20),
                 child: Row(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.asset(
-                        'assets/mascot/goat_rocker.jpeg',
-                        width: 70,
-                        height: 70,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(
-                              Icons.groups,
-                              color: AppColors.primaryNeon,
-                              size: 40,
-                            ),
+                    Image.asset(
+                      'assets/mascot/goat_rocker.png',
+                      width: 70,
+                      height: 70,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.groups,
+                        color: AppColors.primaryNeon,
+                        size: 40,
                       ),
                     ),
                     const SizedBox(width: 16),

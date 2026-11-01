@@ -141,18 +141,15 @@ class AdaptiveScaffold extends ConsumerWidget {
       child: Row(
         children: [
           if (isCompact) ...[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                'assets/mascot/goat_idle.jpeg',
-                width: 28,
-                height: 28,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => const Icon(
-                  Icons.pets,
-                  color: AppColors.primaryNeon,
-                  size: 22,
-                ),
+            Image.asset(
+              'assets/mascot/goat_idle.png',
+              width: 28,
+              height: 28,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => const Icon(
+                Icons.pets,
+                color: AppColors.primaryNeon,
+                size: 22,
               ),
             ),
             const SizedBox(width: 6),
@@ -275,20 +272,17 @@ class AdaptiveScaffold extends ConsumerWidget {
             child: isDesktop
                 ? Row(
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Image.asset(
-                          'assets/mascot/goat_idle.jpeg',
-                          width: 38,
-                          height: 38,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(
-                                Icons.pets,
-                                color: AppColors.primaryNeon,
-                                size: 34,
-                              ),
-                        ),
+                      Image.asset(
+                        'assets/mascot/goat_idle.png',
+                        width: 38,
+                        height: 38,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
+                              Icons.pets,
+                              color: AppColors.primaryNeon,
+                              size: 34,
+                            ),
                       ),
                       const SizedBox(width: 10),
                       Flexible(
@@ -304,19 +298,15 @@ class AdaptiveScaffold extends ConsumerWidget {
                     ],
                   )
                 : Center(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        'assets/mascot/goat_idle.jpeg',
-                        width: 38,
-                        height: 38,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(
-                              Icons.pets,
-                              color: AppColors.primaryNeon,
-                              size: 34,
-                            ),
+                    child: Image.asset(
+                      'assets/mascot/goat_idle.png',
+                      width: 38,
+                      height: 38,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.pets,
+                        color: AppColors.primaryNeon,
+                        size: 34,
                       ),
                     ),
                   ),
