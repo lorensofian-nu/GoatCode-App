@@ -97,3 +97,16 @@ Estados: `PROPOSED`, `APPROVED`, `REJECTED`, `DEFERRED`.
 - **Trade-offs:** `BackdropFilter` requiere composición gráfica GPU; se mitiga limitando el sigma de desenfoque a 12-16px y usando `ClipRRect`/`ClipRect` contenidos.
 - **Aprobación del usuario:** APROBADO por el usuario el 2026-10-31.
 
+---
+
+### ADR-008 — Mecánica de 5 vidas y recarga temporal pasiva
+- **Estado:** APPROVED
+- **Fecha:** 2026-10-31
+- **Contexto:** El usuario solicitó explícitamente un sistema de 5 vidas que se pierden con respuestas incorrectas en los ejercicios y se recargan con el paso del tiempo.
+- **Opciones consideradas:**
+  1. Contador de 5 vidas con recarga pasiva calculada por marcas de tiempo en `LocalStorageService` (1 vida cada 15 min), sin bloqueos abusivos e integración con `userProfileProvider` y `LivesBadge`.
+  2. Temporizadores estrictos de servidor que bloquean al usuario y requieren compras de vidas (rechazado por ser punitivo y requerir backend).
+- **Recomendación:** **Opción 1: Recarga temporal pasiva local**. El cómputo por diferencia de tiempo (`DateTime.now() - lastTimestamp`) garantiza que el tiempo transcurrido restaura vidas incluso si el navegador se cierra o el dispositivo se suspende. Se incluye modal accesible con desglose de corazones, tiempo exacto restante en formato MM:SS y opción de reposo amigable.
+- **Trade-offs:** La recarga está sujeta a la hora del reloj del dispositivo en este MVP 100% offline, pero garantiza que la experiencia del usuario sea fluida, respetuosa y educativa.
+- **Aprobación del usuario:** Solicitado y aprobado explícitamente por el usuario el 2026-10-31.
+

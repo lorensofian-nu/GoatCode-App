@@ -26,6 +26,7 @@
 | `streakFire` | `#FF7A00` | Naranja fuego para el contador y animación de rachas (estilo Duolingo). | PROPOSED |
 | `successGreen` | `#00E676` | Verde esmeralda para respuestas correctas, lecciones completadas y checks. | PROPOSED |
 | `warningAmber` | `#FFB300` | Ámbar cálido para sugerencias, pistas y estados pendientes. | PROPOSED |
+| `heartYellow` | `#FFD21E` | Amarillo dorado brillante para el contador de vidas/corazones y energía vital. | PROPOSED |
 | `errorSoft` | `#FF5252` | Rojo coral no agresivo para indicar respuestas incorrectas y sugerir reintento. | PROPOSED |
 | `textPrimary` | `#F5F3FF` | Blanco cálido de alta luminancia (contraste > 12:1 contra fondo). | PROPOSED |
 | `textSecondary` | `#B8B2D1` | Lavanda grisáceo para subtítulos, etiquetas y metadatos (contraste > 5:1). | PROPOSED |

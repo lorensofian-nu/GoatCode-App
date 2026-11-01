@@ -68,5 +68,56 @@ void main() {
       expect(storage.getSoundEnabled(), isFalse);
       expect(storage.getGlassEffectEnabled(), isFalse);
     });
+
+    test('initial lives is 5 and seconds to next life is 0', () {
+      expect(storage.getLives(), 5);
+      expect(storage.getSecondsToNextLife(), 0);
+    });
+
+    test('losing lives decrements and sets regeneration timer', () async {
+      expect(storage.getLives(), 5);
+      final remaining = await storage.loseLife();
+      expect(remaining, 4);
+      expect(storage.getLives(), 4);
+      expect(storage.getSecondsToNextLife(), greaterThan(0));
+      expect(storage.getSecondsToNextLife(), lessThanOrEqualTo(15 * 60));
+
+      await storage.loseLife(); // 3
+      await storage.loseLife(); // 2
+      await storage.loseLife(); // 1
+      final lastRemaining = await storage.loseLife(); // 0
+      expect(lastRemaining, 0);
+      expect(storage.getLives(), 0);
+
+      // Lives cannot drop below 0
+      final underflow = await storage.loseLife();
+      expect(underflow, 0);
+      expect(storage.getLives(), 0);
+    });
+
+    test('refillLives resets lives to max 5', () async {
+      await storage.loseLife();
+      await storage.loseLife();
+      expect(storage.getLives(), 3);
+
+      await storage.refillLives();
+      expect(storage.getLives(), 5);
+      expect(storage.getSecondsToNextLife(), 0);
+    });
+
+    test('time-based regeneration restores lives correctly', () async {
+      await storage.loseLife(); // 4 lives
+      expect(storage.getLives(), 4);
+
+      // Simulate that 16 minutes have passed since last life was lost
+      final sixteenMinutesAgo = DateTime.now()
+          .subtract(const Duration(minutes: 16))
+          .millisecondsSinceEpoch;
+      await prefs.setInt('goat_last_life_loss_timestamp', sixteenMinutesAgo);
+
+      // getLives should compute passive regeneration and return 5
+      expect(storage.getLives(), 5);
+      expect(storage.getSecondsToNextLife(), 0);
+    });
   });
 }

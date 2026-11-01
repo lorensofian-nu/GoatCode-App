@@ -135,19 +135,61 @@ class DashboardScreen extends ConsumerWidget {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          ElevatedButton.icon(
-                            icon: const Icon(Icons.play_arrow_rounded),
-                            label: const Text('Continuar Lección'),
-                            onPressed: () {
-                              final nextLesson = SampleLessons.allLessons
-                                  .firstWhere(
-                                    (l) =>
-                                        !user.completedLessons.contains(l.id),
-                                    orElse: () =>
-                                        SampleLessons.allLessons.first,
-                                  );
-                              context.go('/lesson/${nextLesson.id}');
-                            },
+                          Wrap(
+                            spacing: 12,
+                            runSpacing: 8,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.play_arrow_rounded),
+                                label: const Text('Continuar Lección'),
+                                onPressed: () {
+                                  final nextLesson = SampleLessons.allLessons
+                                      .firstWhere(
+                                        (l) =>
+                                            !user.completedLessons.contains(l.id),
+                                        orElse: () =>
+                                            SampleLessons.allLessons.first,
+                                      );
+                                  context.go('/lesson/${nextLesson.id}');
+                                },
+                              ),
+                              if (user.lives < user.maxLives)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.heartYellow
+                                        .withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: AppColors.heartYellow
+                                          .withValues(alpha: 0.35),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.favorite,
+                                        size: 14,
+                                        color: AppColors.heartYellow,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        '${user.lives}/${user.maxLives} • Recarga en ${user.formattedTimeUntilNextLife}',
+                                        style: TextStyle(
+                                          color: AppColors.heartYellow,
+                                          fontSize: 12 * scale,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
                           ),
                         ],
                       ),

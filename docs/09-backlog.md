@@ -39,6 +39,6 @@
 | **TSK-021** | Creación del componente `CosmicCard` con elevación hover y resplandor interactivo | `flutter-developer` | S | TSK-020 | **DONE** |
 | **TSK-022** | Motion UI en Dashboard, Lección (shake/celebrate), Mascota (breathing/podio) y Roadmap | `flutter-developer` | M | TSK-021 | **DONE** |
 | **TSK-023** | Pruebas de integración de Motion UI, compatibilidad de tests y compilación web | `quality-auditor` | S | TSK-022 | **DONE** |
-
+| **TSK-024** | Implementación del sistema de 5 vidas y recarga temporal en rama feature | `flutter-developer` | M | ADR-008 | **DONE** |
 
 

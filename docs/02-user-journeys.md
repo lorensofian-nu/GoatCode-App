@@ -57,7 +57,7 @@ Ruta modal / inmersiva:
        ▼
 6. Feedback Inmediato:
    - Si acierta: Banner verde cálido, explicación de por qué es correcto, la Cabra sonríe y salta de felicidad (+100 XP).
-   - Si falla: Banner informativo amable (no punitivo), explicación del concepto, la Cabra anima a intentarlo de nuevo sin descontar vidas ni bloquear el avance.
+   - Si falla: Se descuenta 1 de sus 5 vidas (❤️). La cabra muestra expresión de aliento constructivo. Si le quedan vidas, puede pulsar "Intentar de nuevo". Si llega a 0 vidas, se presenta una pausa pedagógica con la cabra sorprendida y el contador de regeneración automática (1 cada 15 min), además de acceso a recarga de vidas.
        │
        ▼
 7. Finalización de Lección:

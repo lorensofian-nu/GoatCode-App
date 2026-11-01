@@ -10,6 +10,9 @@ class UserProfileState {
   final int streak;
   final String mascotSkin;
   final List<String> completedLessons;
+  final int lives;
+  final int maxLives;
+  final int secondsToNextLife;
 
   const UserProfileState({
     required this.username,
@@ -18,9 +21,19 @@ class UserProfileState {
     required this.streak,
     required this.mascotSkin,
     required this.completedLessons,
+    this.lives = LocalStorageService.maxLives,
+    this.maxLives = LocalStorageService.maxLives,
+    this.secondsToNextLife = 0,
   });
 
   bool get isOnboarded => username != null && username!.isNotEmpty;
+  bool get hasLives => lives > 0;
+
+  String get formattedTimeUntilNextLife {
+    final m = secondsToNextLife ~/ 60;
+    final s = secondsToNextLife % 60;
+    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+  }
 
   UserProfileState copyWith({
     String? username,
@@ -29,6 +42,9 @@ class UserProfileState {
     int? streak,
     String? mascotSkin,
     List<String>? completedLessons,
+    int? lives,
+    int? maxLives,
+    int? secondsToNextLife,
   }) {
     return UserProfileState(
       username: username ?? this.username,
@@ -37,14 +53,15 @@ class UserProfileState {
       streak: streak ?? this.streak,
       mascotSkin: mascotSkin ?? this.mascotSkin,
       completedLessons: completedLessons ?? this.completedLessons,
+      lives: lives ?? this.lives,
+      maxLives: maxLives ?? this.maxLives,
+      secondsToNextLife: secondsToNextLife ?? this.secondsToNextLife,
     );
   }
 }
 
 class UserProfileNotifier extends Notifier<UserProfileState> {
-  @override
-  UserProfileState build() {
-    final storage = ref.watch(localStorageServiceProvider);
+  UserProfileState _buildState(LocalStorageService storage) {
     return UserProfileState(
       username: storage.getUsername(),
       xp: storage.getXP(),
@@ -52,7 +69,28 @@ class UserProfileNotifier extends Notifier<UserProfileState> {
       streak: storage.getStreak(),
       mascotSkin: storage.getMascotSkin(),
       completedLessons: storage.getCompletedLessons(),
+      lives: storage.getLives(),
+      maxLives: LocalStorageService.maxLives,
+      secondsToNextLife: storage.getSecondsToNextLife(),
     );
+  }
+
+  @override
+  UserProfileState build() {
+    final storage = ref.watch(localStorageServiceProvider);
+    return _buildState(storage);
+  }
+
+  void refreshLives() {
+    final storage = ref.read(localStorageServiceProvider);
+    final currentLives = storage.getLives();
+    final seconds = storage.getSecondsToNextLife();
+    if (currentLives != state.lives || seconds != state.secondsToNextLife) {
+      state = state.copyWith(
+        lives: currentLives,
+        secondsToNextLife: seconds,
+      );
+    }
   }
 
   Future<void> setUsername(String name) async {
@@ -70,13 +108,26 @@ class UserProfileNotifier extends Notifier<UserProfileState> {
   Future<void> completeLesson(String lessonId) async {
     final storage = ref.read(localStorageServiceProvider);
     await storage.markLessonCompleted(lessonId);
-    state = UserProfileState(
-      username: storage.getUsername(),
-      xp: storage.getXP(),
-      level: storage.getLevel(),
-      streak: storage.getStreak(),
-      mascotSkin: storage.getMascotSkin(),
-      completedLessons: storage.getCompletedLessons(),
+    state = _buildState(storage);
+  }
+
+  Future<int> loseLife() async {
+    final storage = ref.read(localStorageServiceProvider);
+    final newLives = await storage.loseLife();
+    final seconds = storage.getSecondsToNextLife();
+    state = state.copyWith(
+      lives: newLives,
+      secondsToNextLife: seconds,
+    );
+    return newLives;
+  }
+
+  Future<void> refillLives() async {
+    final storage = ref.read(localStorageServiceProvider);
+    await storage.refillLives();
+    state = state.copyWith(
+      lives: LocalStorageService.maxLives,
+      secondsToNextLife: 0,
     );
   }
 
@@ -90,6 +141,9 @@ class UserProfileNotifier extends Notifier<UserProfileState> {
       streak: 0,
       mascotSkin: 'idle',
       completedLessons: [],
+      lives: LocalStorageService.maxLives,
+      maxLives: LocalStorageService.maxLives,
+      secondsToNextLife: 0,
     );
   }
 }

@@ -26,6 +26,7 @@ GoatCode es una plataforma web responsiva, 100% offline-first en su fase inicial
 | **REQ-008** | **Personalización de la Mascota Cabra** | Media | Permite al usuario seleccionar variaciones de color o estilo para su cabra acompañante y guardar su look en persistencia local. | REQ-001 |
 | **REQ-009** | **Ajustes de accesibilidad para adultos** | Alta | Selector de tamaño de letra de interfaz (Normal, Grande, Extra Grande), interruptor de alto contraste, y control de efectos de sonido. Debe reflejarse de inmediato en toda la app. | Shell / Theme |
 | **REQ-010** | **Diseño adaptativo responsivo** | Alta | La interfaz se adapta dinámicamente a anchos móviles (360-480px, menú inferior o drawer), tabletas (768-1024px) y escritorios (1280px+, barra lateral fija / NavigationRail). | Responsive framework |
+| **REQ-011** | **Sistema de vidas y recarga temporal pasiva** | Alta | El usuario inicia con 5 vidas (corazones). Cada respuesta incorrecta en un reto resta 1 vida. Si llega a 0 vidas, se muestra aviso de reposo. Se recarga 1 vida cada 15 minutos de forma pasiva y automática. | Persistencia local, REQ-004 |
 
 ## Fuera de alcance inicial (Fase futura)
 
@@ -47,7 +48,7 @@ GoatCode es una plataforma web responsiva, 100% offline-first en su fase inicial
 ## Reglas de negocio
 
 1. **Racha diaria:** Se cuenta 1 racha por día calendario en el que el usuario complete al menos una actividad. Si transcurre un día completo sin actividad, la racha se reinicia a 1 (o se ofrece un escudo de racha amigable para evitar frustración en adultos).
-2. **Sin fallos punitivos:** No existe el concepto de "vidas que se acaban y te impiden estudiar" (a diferencia del modelo frustrante de Duolingo tradicional). El adulto puede fallar, leer la explicación y reintentar cuantas veces necesite.
+2. **Sistema de vidas (5 vidas):** El usuario cuenta con un máximo de 5 vidas representadas visualmente en la barra superior. Cada fallo en un reto interactivo resta 1 vida. Las vidas se regeneran pasivamente (1 vida cada 15 minutos) incluso con la app cerrada. Al quedarse sin vidas, el sistema ofrece una pausa pedagógica formativa o recarga instantánea para continuar aprendiendo sin bloqueos prolongados.
 3. **Cálculo de niveles:** Cada lección superada otorga 100 XP. Cada nivel requiere `Nivel * 250 XP`.
 4. **Desbloqueo progresivo:** Las unidades del curso se desbloquean en secuencia pedagógica lógica (Variables -> Condicionales -> Bucles), pero se permite repasar lecciones ya completadas en cualquier momento.
 

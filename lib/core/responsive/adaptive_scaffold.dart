@@ -8,6 +8,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_typography.dart';
 import '../widgets/cosmic_background.dart';
+import '../widgets/lives_badge.dart';
 import 'responsive_layout.dart';
 
 class AdaptiveScaffold extends ConsumerWidget {
@@ -176,15 +177,17 @@ class AdaptiveScaffold extends ConsumerWidget {
                 size: 22,
               ),
             ),
-            const SizedBox(width: 6),
-            Text(
-              'GoatCode',
-              style: AppTypography.headingSmall(scale).copyWith(
-                color: AppColors.secondaryCyan,
-                fontWeight: FontWeight.w700,
-                fontSize: 15 * scale,
+            if (MediaQuery.sizeOf(context).width > 420) ...[
+              const SizedBox(width: 6),
+              Text(
+                'GoatCode',
+                style: AppTypography.headingSmall(scale).copyWith(
+                  color: AppColors.secondaryCyan,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15 * scale,
+                ),
               ),
-            ),
+            ],
           ],
           const Spacer(),
           Semantics(
@@ -254,6 +257,11 @@ class AdaptiveScaffold extends ConsumerWidget {
                 ),
               ],
             ),
+          ),
+          const SizedBox(width: 8),
+          LivesBadge(
+            compact: isCompact,
+            showCountdown: !isCompact,
           ),
           if (!isCompact) ...[
             const SizedBox(width: 4),
