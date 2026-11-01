@@ -43,11 +43,11 @@ extension GoatMoodExtension on GoatMood {
   String get displayName {
     switch (this) {
       case GoatMood.happy:
-        return 'Feliz y motivada';
+        return 'Cabra Feliz';
       case GoatMood.sad:
-        return 'Triste por pérdida de vidas';
+        return 'Cabra Triste';
       case GoatMood.critical:
-        return 'Afligida (sin vidas)';
+        return 'Cabra Triste (Sin vidas)';
     }
   }
 
@@ -102,15 +102,15 @@ extension GoatMoodExtension on GoatMood {
   String getSpeechMessage({int streak = 0, int lives = 5, int maxLives = 5}) {
     switch (this) {
       case GoatMood.critical:
-        return '¡Nos quedamos sin vidas! Me duele verte así... No te desanimes: descansa un momento o repasa tus notas mientras se recargan.';
+        return '¡Nos quedamos sin vidas! Me duele verte así... No te desanimes: debemos esperar 15 minutos para poder recuperar cada vida.';
       case GoatMood.sad:
         if (lives == 1) {
-          return '¡Cuidado! Solo nos queda 1 vida... Mi corazón late con nervios. ¡Respira hondo y lee con mucha calma antes de responder!';
+          return '¡Cuidado! Nos queda solo 1 vida... Estoy triste por los tropiezos. Recuerda que debemos esperar 15 minutos para poder recuperar cada vida.';
         }
         if (lives == 4) {
-          return '¡Oh no! Perdimos una vida (te quedan 4/$maxLives)... Me pone triste tropezar, pero el error nos enseña. ¡Vamos con calma en la siguiente!';
+          return '¡Oh no! Perdimos una vida (nos quedan 4/$maxLives). Estoy triste por el tropiezo, pero debemos esperar 15 minutos para recuperarla.';
         }
-        return '¡Oh no! Nos quedan solo $lives vidas... Me pone triste verte tropezar, pero tropezar también es aprender. ¡Tú puedes!';
+        return '¡Oh no! Nos quedan solo $lives vidas... Estoy en estado Cabra Triste. Recuerda esperar los 15 minutos para recuperar vidas.';
       case GoatMood.happy:
         if (streak > 0) {
           return '¡Llevas $streak días seguidos con tus $lives vidas intactas! Tu disciplina y mente lógica son imparables.';

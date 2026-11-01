@@ -41,5 +41,6 @@
 | **TSK-023** | Pruebas de integración de Motion UI, compatibilidad de tests y compilación web | `quality-auditor` | S | TSK-022 | **DONE** |
 | **TSK-024** | Implementación del sistema de 5 vidas y recarga temporal en rama feature | `flutter-developer` | M | ADR-008 | **DONE** |
 | **TSK-025** | Regla de estado de ánimo dinámico y cambio a gesto triste al bajar vidas | `flutter-developer` | S | ADR-009 | **DONE** |
+| **TSK-026** | Estado Cabra Triste por pérdida de vidas y espera obligatoria de 15 minutos sin recarga automática | `flutter-developer` | S | ADR-010 | **DONE** |
 
 

@@ -31,6 +31,7 @@ class UserProfileState {
 
   bool get isOnboarded => username != null && username!.isNotEmpty;
   bool get hasLives => lives > 0;
+  bool get canRecoverLife => lives < maxLives && secondsToNextLife == 0;
 
   /// Estado de ánimo de la cabra derivado dinámicamente de las vidas disponibles.
   GoatMood get goatMood => GoatMoodExtension.fromLives(lives, maxLives);
@@ -129,6 +130,14 @@ class UserProfileNotifier extends Notifier<UserProfileState> {
   Future<int> loseLife() async {
     final storage = ref.read(localStorageServiceProvider);
     final newLives = await storage.loseLife();
+    final seconds = storage.getSecondsToNextLife();
+    state = state.copyWith(lives: newLives, secondsToNextLife: seconds);
+    return newLives;
+  }
+
+  Future<int> recoverLife() async {
+    final storage = ref.read(localStorageServiceProvider);
+    final newLives = await storage.recoverLife();
     final seconds = storage.getSecondsToNextLife();
     state = state.copyWith(lives: newLives, secondsToNextLife: seconds);
     return newLives;

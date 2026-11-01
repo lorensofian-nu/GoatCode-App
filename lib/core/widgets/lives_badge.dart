@@ -27,16 +27,19 @@ class _LivesBadgeState extends ConsumerState<LivesBadge> {
   @override
   void initState() {
     super.initState();
-    if (widget.showCountdown) {
-      _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-        if (mounted) {
-          final user = ref.read(userProfileProvider);
-          if (user.lives < user.maxLives) {
-            ref.read(userProfileProvider.notifier).refreshLives();
-          }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(userProfileProvider.notifier).refreshLives();
+      }
+    });
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) {
+        final user = ref.read(userProfileProvider);
+        if (user.lives < user.maxLives) {
+          ref.read(userProfileProvider.notifier).refreshLives();
         }
-      });
-    }
+      }
+    });
   }
 
   @override
@@ -155,6 +158,11 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(userProfileProvider.notifier).refreshLives();
+      }
+    });
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) {
         final user = ref.read(userProfileProvider);
@@ -270,55 +278,113 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
               const SizedBox(height: 16),
 
               if (user.lives < user.maxLives) ...[
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF20172E),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: AppColors.heartYellow.withValues(alpha: 0.35),
+                if (user.canRecoverLife) ...[
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.successGreen.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppColors.successGreen.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.check_circle_rounded,
+                              color: AppColors.successGreen,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '¡15 minutos cumplidos!',
+                              style: TextStyle(
+                                color: AppColors.successGreen,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14 * scale,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Ya puedes recuperar 1 vida para tu cabra.',
+                          style: AppTypography.caption(scale)
+                              .copyWith(color: AppColors.textPrimary),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 12),
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.favorite, size: 18),
+                          label: const Text('Recuperar 1 vida (+1 ❤️)'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.successGreen,
+                            foregroundColor: Colors.black,
+                          ),
+                          onPressed: () async {
+                            await ref
+                                .read(userProfileProvider.notifier)
+                                .recoverLife();
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.timer_outlined,
-                            color: AppColors.secondaryCyan,
-                            size: 18,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Próxima vida en:',
-                            style: AppTypography.caption(scale),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            user.formattedTimeUntilNextLife,
-                            style: TextStyle(
+                ] else ...[
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF20172E),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: AppColors.heartYellow.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.timer_outlined,
                               color: AppColors.secondaryCyan,
-                              fontSize: 16 * scale,
-                              fontWeight: FontWeight.w700,
-                              fontFamily: 'monospace',
+                              size: 18,
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Se recarga 1 vida cada 15 minutos automáticamente.',
-                        style: AppTypography.caption(scale).copyWith(
-                          fontSize: 11 * scale,
-                          color: AppColors.textMuted,
+                            const SizedBox(width: 8),
+                            Text(
+                              'Tiempo de espera:',
+                              style: AppTypography.caption(scale),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              user.formattedTimeUntilNextLife,
+                              style: TextStyle(
+                                color: AppColors.secondaryCyan,
+                                fontSize: 16 * scale,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: 'monospace',
+                              ),
+                            ),
+                          ],
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                        const SizedBox(height: 6),
+                        Text(
+                          'Se tiene que esperar a que pasen los 15 minutos para poder recuperarla. No se puede recuperar automáticamente.',
+                          style: AppTypography.caption(scale).copyWith(
+                            fontSize: 11 * scale,
+                            color: AppColors.textMuted,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                ],
                 const SizedBox(height: 16),
               ] else ...[
                 Container(
@@ -342,12 +408,15 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
                         size: 18,
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        '¡Tus vidas están al máximo!',
-                        style: TextStyle(
-                          color: AppColors.successGreen,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13 * scale,
+                      Flexible(
+                        child: Text(
+                          '¡Tus vidas están al máximo!',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: AppColors.successGreen,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13 * scale,
+                          ),
                         ),
                       ),
                     ],
@@ -357,7 +426,7 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
               ],
 
               Text(
-                'Cada respuesta incorrecta en un reto resta 1 vida. Si tus vidas bajan considerablemente (2 o menos), el gesto de la cabra cambiará a triste para acompañarte.',
+                'Cada respuesta incorrecta en un reto resta 1 vida. Al perder vidas, el estado de la cabra cambia a Cabra Triste. Para poder recuperar una vida se tiene que esperar a que pasen los 15 minutos (no se puede recuperar automáticamente).',
                 style: AppTypography.caption(scale)
                     .copyWith(color: AppColors.textSecondary, height: 1.4),
                 textAlign: TextAlign.center,
@@ -367,16 +436,6 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  if (user.lives < user.maxLives) ...[
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        ref.read(userProfileProvider.notifier).refillLives();
-                      },
-                      icon: const Icon(Icons.flash_on, size: 16),
-                      label: const Text('Recargar Vidas'),
-                    ),
-                    const SizedBox(width: 10),
-                  ],
                   ElevatedButton(
                     onPressed: () => Navigator.of(context).pop(),
                     child: const Text('Entendido'),

@@ -117,9 +117,22 @@ Estados: `PROPOSED`, `APPROVED`, `REJECTED`, `DEFERRED`.
 - **Fecha:** 2026-11-01
 - **Contexto:** El usuario solicitó la siguiente regla explícita: "al bajar una cantidad considerable de vidas, el gesto de la cabra cambia a triste... Regla de que el estado de ánimo de la cabra dependerá de las vidas disponibles en el momento."
 - **Opciones consideradas:**
-  1. Modelo de dominio unificado `GoatMood` (`happy`, `attentive`, `sad`, `critical`), derivado reactivamente de `lives / maxLives`. Cuando las vidas bajan a 2 o menos (pérdida de >= 60% de vidas), el gesto de la cabra conmuta obligatoriamente a triste (`assets/mascot/goat_sad.png`), adaptando transversalmente el avatar de navegación (`AdaptiveScaffold`), la tarjeta principal de Dashboard, los bocadillos de diálogo pedagógicos (`MascotSpeechBubble`), la pantalla de personalización (`MascotScreen`) y el diálogo de vidas (`LivesBadge`).
+  1. Modelo de dominio unificado `GoatMood` (`happy`, `sad`, `critical`), derivado reactivamente de `lives / maxLives`. Cuando las vidas bajan de 5 (< 5 vidas), el gesto de la cabra conmuta obligatoriamente a triste (`assets/mascot/goat_sad.png`), adaptando transversalmente el avatar de navegación (`AdaptiveScaffold`), la tarjeta principal de Dashboard, los bocadillos de diálogo pedagógicos (`MascotSpeechBubble`), la pantalla de personalización (`MascotScreen`) y el diálogo de vidas (`LivesBadge`).
   2. Cambio aislado únicamente en la pantalla de lección al errar una respuesta (insuficiente porque no cumplía la regla sistémica de que el estado de ánimo dependa de las vidas disponibles en el momento).
 - **Recomendación:** **Opción 1: Modelo reactivo transversal `GoatMood`**. Asegura coherencia y empatía pedagógica. Si el usuario pierde vidas en cualquier reto y vuelve al Dashboard o navega por la app, la cabra empatiza visualmente con un gesto triste y diálogos comprensivos sin ser condescendiente ni punitiva.
-- **Trade-offs:** El gesto triste prioriza la empatía sobre atuendos cosméticos (`userSkin`) mientras las vidas sean bajas (<= 2). En `MascotScreen` se añade un selector de previsualización para permitir inspeccionar atuendos o el gesto triste en tiempo real.
+- **Trade-offs:** El gesto triste prioriza la empatía sobre atuendos cosméticos (`userSkin`) mientras se hayan perdido vidas (< 5). En `MascotScreen` se muestra triste por defecto en el podio.
+- **Aprobación del usuario:** Solicitado por el usuario el 2026-11-01.
+
+---
+
+### ADR-010 — Estado estricto "Cabra Triste" y espera obligatoria de 15 minutos sin recuperación automática
+- **Estado:** APPROVED
+- **Fecha:** 2026-11-01
+- **Contexto:** El usuario especificó: *"quiero que al perder vidas la cabra cambie de estado a cabra triste adicional que las vidas se tiene que esperar a que pasen los 15 minutos, para poder recuperarla no se puede recuperar automáticamente"*.
+- **Decisión:**
+  1. **Estado "Cabra Triste":** Ante cualquier vida perdida (vidas < 5), el estado del perfil y de la cabra se nombra explícitamente "Cabra Triste" con icono y gesto triste (`assets/mascot/goat_sad.png`), visible por defecto en el podio de `MascotScreen`, el hero banner y tarjetas del `DashboardScreen`, la barra de navegación y el `LivesBadge`.
+  2. **Espera obligatoria de 15 minutos:** No se permite recuperación automática en segundo plano ni atajos de recarga instantánea. El temporizador de 15 minutos (900s) es un requisito estricto y observable.
+  3. **Acción explícita de recuperación tras 15 minutos:** Durante los 15 minutos, el botón de recuperación permanece bloqueado mostrando el tiempo restante exacto (`MM:SS`) y explicando que no se puede recuperar automáticamente. Solo al cumplirse los 15 minutos (`canRecoverLife == true`), se activa el botón *"¡15 minutos cumplidos! Recuperar 1 vida (+1 ❤️)"*, permitiendo al estudiante recuperar una vida a la vez e iniciando el siguiente bloque de 15 minutos si aún quedan vidas por recuperar.
+- **Trade-offs:** Elimina atajos de recarga inmediata en favor del respeto pedagógico por los ritmos de descanso y concentración.
 - **Aprobación del usuario:** Solicitado por el usuario el 2026-11-01.
 

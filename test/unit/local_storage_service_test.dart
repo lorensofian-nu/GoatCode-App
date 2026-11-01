@@ -105,19 +105,41 @@ void main() {
       expect(storage.getSecondsToNextLife(), 0);
     });
 
-    test('time-based regeneration restores lives correctly', () async {
-      await storage.loseLife(); // 4 lives
-      expect(storage.getLives(), 4);
+    test(
+      'must wait 15 minutes to recover life and cannot recover automatically',
+      () async {
+        await storage.loseLife(); // 4 lives
+        expect(storage.getLives(), 4);
 
-      // Simulate that 16 minutes have passed since last life was lost
-      final sixteenMinutesAgo = DateTime.now()
-          .subtract(const Duration(minutes: 16))
-          .millisecondsSinceEpoch;
-      await prefs.setInt('goat_last_life_loss_timestamp', sixteenMinutesAgo);
+        // 1. If only 5 minutes have passed: cannot recover
+        final fiveMinutesAgo = DateTime.now()
+            .subtract(const Duration(minutes: 5))
+            .millisecondsSinceEpoch;
+        await prefs.setInt('goat_last_life_loss_timestamp', fiveMinutesAgo);
 
-      // getLives should compute passive regeneration and return 5
-      expect(storage.getLives(), 5);
-      expect(storage.getSecondsToNextLife(), 0);
-    });
+        expect(storage.getLives(), 4); // Does not automatically recover
+        expect(storage.canRecoverLife(), isFalse);
+        final earlyAttempt = await storage.recoverLife();
+        expect(earlyAttempt, 4); // Still 4
+
+        // 2. Simulate that 16 minutes have passed since life was lost
+        final sixteenMinutesAgo = DateTime.now()
+            .subtract(const Duration(minutes: 16))
+            .millisecondsSinceEpoch;
+        await prefs.setInt('goat_last_life_loss_timestamp', sixteenMinutesAgo);
+
+        // getLives remains 4 until user explicitly recovers it (not automatic)
+        expect(storage.getLives(), 4);
+        expect(storage.getSecondsToNextLife(), 0);
+        expect(storage.canRecoverLife(), isTrue);
+
+        // User recovers the life
+        final recovered = await storage.recoverLife();
+        expect(recovered, 5);
+        expect(storage.getLives(), 5);
+        expect(storage.getSecondsToNextLife(), 0);
+        expect(storage.canRecoverLife(), isFalse);
+      },
+    );
   });
 }

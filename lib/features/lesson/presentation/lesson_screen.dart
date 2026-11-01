@@ -412,7 +412,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        '¡Sin vidas disponibles!',
+                                        '¡Sin vidas disponibles! (Cabra Triste)',
                                         style: TextStyle(
                                           color: AppColors.heartYellow,
                                           fontWeight: FontWeight.w700,
@@ -421,17 +421,30 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        'Próxima vida en: ${user.formattedTimeUntilNextLife}. Espera la recarga o recarga tus vidas.',
+                                        user.canRecoverLife
+                                            ? '¡15 minutos cumplidos! Ya puedes recuperar 1 vida.'
+                                            : 'Debes esperar a que pasen los 15 minutos (${user.formattedTimeUntilNextLife}) para poder recuperar una vida. No se puede recuperar automáticamente.',
                                         style: AppTypography.caption(scale),
                                       ),
                                     ],
                                   ),
                                 ),
-                                TextButton(
-                                  onPressed: () =>
-                                      showLivesDialog(context, ref),
-                                  child: const Text('Recargar'),
-                                ),
+                                if (user.canRecoverLife)
+                                  ElevatedButton.icon(
+                                    onPressed: () async {
+                                      await ref
+                                          .read(userProfileProvider.notifier)
+                                          .recoverLife();
+                                    },
+                                    icon: const Icon(Icons.favorite, size: 14),
+                                    label: const Text('Recuperar vida'),
+                                  )
+                                else
+                                  TextButton(
+                                    onPressed: () =>
+                                        showLivesDialog(context, ref),
+                                    child: const Text('Ver estado'),
+                                  ),
                               ],
                             ),
                           ),
@@ -552,7 +565,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                         isSuccess
                             ? '¡Respuesta Correcta! (+100 XP)'
                             : (isOutOfLives
-                                  ? '¡Te has quedado sin vidas!'
+                                  ? '¡Te has quedado sin vidas! (Cabra Triste)'
                                   : 'Casi lo logras... (-1 Vida ❤️)'),
                         style: TextStyle(
                           color: isSuccess
@@ -567,8 +580,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                         isSuccess
                             ? lesson.explanationSuccess
                             : (isOutOfLives
-                                  ? 'Has agotado tus 5 vidas. Tu cabra se está tomando un descanso. Tus vidas se recargarán automáticamente con el tiempo o puedes recargarlas ahora.'
-                                  : lesson.explanationFailure),
+                                  ? 'Has agotado tus 5 vidas. Tu cabra ha cambiado de estado a Cabra Triste. Se debe esperar a que pasen los 15 minutos para poder recuperar cada vida; no se puede recuperar automáticamente.'
+                                  : '${lesson.explanationFailure} Tu cabra ha cambiado a Cabra Triste. Recuerda que para recuperar cada vida se debe esperar 15 minutos.'),
                         style: AppTypography.body(scale),
                       ),
                       if (!isSuccess && !isOutOfLives) ...[
@@ -603,11 +616,24 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
               children: [
                 if (!isSuccess) ...[
                   if (isOutOfLives) ...[
-                    OutlinedButton.icon(
-                      onPressed: () => showLivesDialog(context, ref),
-                      icon: const Icon(Icons.flash_on, size: 16),
-                      label: const Text('Recargar vidas'),
-                    ),
+                    if (user.canRecoverLife)
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          await ref
+                              .read(userProfileProvider.notifier)
+                              .recoverLife();
+                        },
+                        icon: const Icon(Icons.favorite, size: 16),
+                        label: const Text('Recuperar 1 vida (+1 ❤️)'),
+                      )
+                    else
+                      OutlinedButton.icon(
+                        onPressed: () => showLivesDialog(context, ref),
+                        icon: const Icon(Icons.timer_outlined, size: 16),
+                        label: Text(
+                          'Espera (${user.formattedTimeUntilNextLife})',
+                        ),
+                      ),
                     const SizedBox(width: 12),
                     ElevatedButton(
                       onPressed: () => context.go('/dashboard'),

@@ -84,7 +84,7 @@ void main() {
   });
 
   testWidgets(
-    'MascotScreen displays mood explanation and handles sad state toggle',
+    'MascotScreen displays sad goat by default when lives < 5 and allows outfit preview',
     (tester) async {
       tester.view.physicalSize = const Size(1280, 1000);
       tester.view.devicePixelRatio = 1.0;
@@ -105,21 +105,126 @@ void main() {
       await tester.pump();
 
       // Verify mood banner is rendered
-      expect(
-        find.text('Estado de Ánimo: Triste por pérdida de vidas'),
-        findsOneWidget,
-      );
+      expect(find.text('Estado de Ánimo: Cabra Triste'), findsOneWidget);
       expect(find.text('2/5 ❤️'), findsOneWidget);
 
-      // Verify choice chips exist for toggling preview
-      expect(find.text('Atuendo seleccionado'), findsOneWidget);
-      expect(find.text('Gesto triste actual (2 vidas)'), findsOneWidget);
+      // Verify podium defaults directly to sad goat
+      expect(find.text('Estado: Cabra Triste'), findsOneWidget);
+      expect(
+        find.textContaining('Tu cabra está en estado Cabra Triste'),
+        findsOneWidget,
+      );
 
-      // Tap on 'Gesto triste actual (2 vidas)'
-      await tester.tap(find.text('Gesto triste actual (2 vidas)'));
+      // Verify choice chips exist for toggling preview
+      expect(find.text('Estado actual: Triste (2 vidas)'), findsOneWidget);
+      expect(find.text('Previsualizar atuendos'), findsOneWidget);
+
+      // Verify sad goat image is used on podium
+      final sadImages = find.byWidgetPredicate(
+        (widget) =>
+            widget is Image &&
+            widget.image is AssetImage &&
+            (widget.image as AssetImage).assetName ==
+                'assets/mascot/goat_sad.png',
+      );
+      expect(sadImages, findsWidgets);
+
+      // Tap on 'Previsualizar atuendos' to switch to skin preview
+      await tester.tap(find.text('Previsualizar atuendos'));
       await tester.pump();
 
-      expect(find.text('Gesto Triste (Por vidas bajas)'), findsOneWidget);
+      // Podium switches away from sad state to preview active skin
+      expect(find.text('Estado: Cabra Triste'), findsNothing);
+      expect(find.text('Cabra Natural'), findsNWidgets(2));
+    },
+  );
+
+  testWidgets(
+    'DashboardScreen compact (mobile) displays sad goat avatar and mood badge when lives < 5',
+    (tester) async {
+      tester.view.physicalSize = const Size(380, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
+      SharedPreferences.setMockInitialValues({
+        'goat_user_name': 'Sofia',
+        'goat_user_lives': 3,
+      });
+      final prefs = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+          child: const MaterialApp(home: Scaffold(body: DashboardScreen())),
+        ),
+      );
+      await tester.pump();
+
+      // Verify compact hero card and bottom card display 'Estado: Cabra Triste'
+      expect(find.text('Estado: Cabra Triste'), findsNWidgets(2));
+    },
+  );
+
+  testWidgets(
+    'LivesBadge dialog displays 15-minute wait message and recovers life when 15 min pass',
+    (tester) async {
+      final now = DateTime.now().millisecondsSinceEpoch;
+      SharedPreferences.setMockInitialValues({
+        'goat_user_name': 'Sofia',
+        'goat_user_lives': 4,
+        'goat_last_life_loss_timestamp':
+            now, // Just lost life, 15 min remaining
+      });
+      final prefs = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+          child: const MaterialApp(home: Scaffold(body: LivesBadge())),
+        ),
+      );
+      await tester.pump();
+
+      // Open dialog
+      await tester.tap(find.byType(LivesBadge));
+      await tester.pumpAndSettle();
+
+      // Verify 15-minute wait text is present
+      expect(
+        find.textContaining(
+          'Se tiene que esperar a que pasen los 15 minutos para poder recuperarla',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('No se puede recuperar automáticamente'),
+        findsWidgets,
+      );
+
+      // Close dialog
+      await tester.tap(find.text('Entendido'));
+      await tester.pumpAndSettle();
+
+      // Now simulate 16 minutes have passed
+      final sixteenMinAgo = DateTime.now()
+          .subtract(const Duration(minutes: 16))
+          .millisecondsSinceEpoch;
+      await prefs.setInt('goat_last_life_loss_timestamp', sixteenMinAgo);
+
+      // Open dialog again
+      await tester.tap(find.byType(LivesBadge));
+      await tester.pumpAndSettle();
+
+      // Verify "¡15 minutos cumplidos!" is displayed and button to recover is available
+      expect(find.text('¡15 minutos cumplidos!'), findsOneWidget);
+      expect(find.text('Recuperar 1 vida (+1 ❤️)'), findsOneWidget);
+
+      // Tap to recover life
+      await tester.tap(find.text('Recuperar 1 vida (+1 ❤️)'));
+      await tester.pumpAndSettle();
+
+      // Lives is now full (5) and success message is displayed
+      expect(find.text('¡Tus vidas están al máximo!'), findsOneWidget);
     },
   );
 

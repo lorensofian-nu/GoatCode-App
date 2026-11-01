@@ -66,6 +66,13 @@
     - **Regla:** Cuando las vidas bajan a 2 o menos (bajada considerable de vidas, pérdida de >= 60%), el gesto visual de la cabra conmuta obligatoriamente a triste (`assets/mascot/goat_sad.png`), adaptando su diálogo pedagógico con empatía y aliento.
     - Sincronización transversal en Dashboard, AppBar y NavigationRail de `AdaptiveScaffold`, selector de atuendos de `MascotScreen`, modal de vidas de `LivesBadge`, lecciones de `LessonScreen` y chip de estado en `ProfileScreen`.
     - Suite de 38 pruebas unitarias y de widgets en verde (`flutter test`), 0 lints en `flutter analyze` y build web verificado.
+18. **Estado "Cabra Triste" estricto y espera de 15 minutos sin recuperación automática (ADR-010):**
+    - Ante cualquier pérdida de vidas (< 5 vidas), el estado se nombra y refleja explícitamente como "Cabra Triste" con asset `assets/mascot/goat_sad.png` en toda la aplicación.
+    - En `MascotScreen`: el podio muestra por defecto la Cabra Triste al ingresar con menos de 5 vidas, con opción de previsualizar atuendos alternativos.
+    - En `DashboardScreen`: disponible tanto en móvil compacto como en escritorio con avatar triste en hero banner y tarjeta de estado.
+    - Espera obligatoria de 15 minutos: no se recupera automáticamente ni existen atajos de recarga instantánea.
+    - Acción explícita de recuperación: al transcurrir los 15 minutos se habilita el botón *"¡15 minutos cumplidos! Recuperar 1 vida (+1 ❤️)"*.
+    - 41 pruebas automatizadas pasando al 100% (`flutter test`) y 0 advertencias en `flutter analyze`.
 
 ## En curso
 
