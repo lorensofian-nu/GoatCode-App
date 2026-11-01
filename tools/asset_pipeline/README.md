@@ -1,41 +1,62 @@
-# Private Gemini asset pipeline — specification
+# Private Gemini asset pipeline — specification & runner
 
-This folder documents the intended private asset-generation tool. It is not wired into Flutter Web yet.
+Este pipeline permite generar e integrar ilustraciones, insignias de logros y personajes utilizando la API oficial de Google Gemini / Imagen manteniendo una estricta frontera de seguridad.
 
-## Security boundary
+## Límite de seguridad (Security Boundary)
 
 ```text
-Private local script or private backend
-  -> reads GEMINI_API_KEY from process environment / local .env
-  -> calls official Gemini SDK / API
-  -> validates image output
-  -> writes approved asset into assets/generated/
-  -> updates docs/06-asset-manifest.csv
+Script local privado (tools/asset_pipeline/generate_asset.js)
+  -> Lee GEMINI_API_KEY desde .env local o variables de entorno (ignorado por Git)
+  -> Llama a la API oficial de Google Gemini / Imagen
+  -> Aplica recorte y transparencia alfa automática
+  -> Guarda el archivo validado en assets/generated/ o assets/mascot/
+  -> Actualiza automáticamente docs/06-asset-manifest.csv
 
-Flutter Web -> serves approved, static assets only
+Flutter Web -> Consume ÚNICAMENTE assets estáticos locales verificados.
 ```
 
-Never put a Gemini API key in Dart code, `web/`, browser local storage, frontend build-time public variables, or a committed config file.
+> [!CAUTION]
+> **Nunca expongas tu API Key:** Jamás incluyas la clave en el código Dart, bundles de producción web o commits de Git.
 
-## Initial configuration
+---
+
+## Configuración rápida
+
+Crea un archivo `.env` en la raíz del repositorio (basado en `.env.example`):
 
 ```env
-GEMINI_API_KEY=...
-GEMINI_IMAGE_MODEL=gemini-nano-banana-2.1
+GEMINI_API_KEY=tu_clave_de_google_ai_studio
+GEMINI_IMAGE_MODEL=imagen-3.0-generate-002
 ```
 
-The model ID is a dated starting point from the official Gemini image generation documentation consulted on 2026-10-31. Verify model availability, pricing, quotas, supported aspect ratios, SDK version, and terms before implementation or bulk generation.
+---
 
-## Planned responsibilities
+## Comandos del Pipeline
 
-1. Read a prompt manifest entry.
-2. Verify private credentials and selected model.
-3. Generate one sample asset, never an unapproved bulk batch.
-4. Save output using stable, descriptive names.
-5. Validate file format, dimensions, size and transparency.
-6. Update manifest with model, prompt revision, date, output path and review status.
-7. Keep generated files out of application code until visual review passes.
+### 1. Listar presets disponibles y su estado
+```bash
+node tools/asset_pipeline/generate_asset.js --list
+```
 
-## Official reference
+### 2. Generar con Gemini API (requiere GEMINI_API_KEY en .env)
+```bash
+# Generar una insignia de logro
+node tools/asset_pipeline/generate_asset.js --preset badge_logic
 
-https://ai.google.dev/gemini-api/docs/image-generation
+# Generar la isla 3D del catálogo
+node tools/asset_pipeline/generate_asset.js --preset island
+
+# Generar la skin de Cabra Maga
+node tools/asset_pipeline/generate_asset.js --preset mascot_wizard
+```
+
+### 3. Modo de prueba Mock (Offline, sin costo ni API Key)
+```bash
+node tools/asset_pipeline/generate_asset.js --preset badge_streak --mock
+```
+
+### 4. Generación personalizada mediante prompt libre
+```bash
+node tools/asset_pipeline/generate_asset.js --prompt "3D cosmic potion bottle with bubbling cyan code liquid" --output "assets/generated/elements/potion.png"
+```
+
