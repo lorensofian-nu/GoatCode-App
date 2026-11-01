@@ -76,7 +76,7 @@
 
 ## En curso
 
-- Integración, resolución de conflictos y apertura de Pull Request de `feature/lives-system` hacia `main`.
+- Pull Request #3 abierto (`feature/lives-system` -> `main`) y listo para revisión o fusión directa (Mergeable: True, 0 conflictos).
 
 ## Pendiente (Fases Futuras / Mantenimiento)
 
