@@ -70,4 +70,30 @@ Estados: `PROPOSED`, `APPROVED`, `REJECTED`, `DEFERRED`.
 - **Trade-offs:** La generación ocurre durante el desarrollo / preparación de assets y no en tiempo real ante el usuario final, lo cual además ahorra costos y garantiza que no haya latencias ni consumo no autorizado de cuotas.
 - **Aprobación del usuario:** APROBADO por el usuario el 2026-10-31.
 
+---
+
+### ADR-006 — Adopción de flutter_animate para Motion UI declarativo
+- **Estado:** APPROVED
+- **Fecha:** 2026-10-31
+- **Contexto:** La experiencia de aprendizaje requiere microinteracciones (retroalimentación de aciertos y errores en ejercicios, efectos hover en tarjetas cósmicas, respiración/animación de la mascota y transiciones escalonadas de lecciones). Se requería elegir entre animaciones nativas con `AnimationController` imperativo o la librería declarativa `flutter_animate`.
+- **Opciones consideradas:**
+  1. `flutter_animate` (Sintaxis declarativa encadenable, soporte nativo de accesibilidad `disableAnimations`, reduce sustancialmente el boilerplate, optimizado para Flutter Web).
+  2. Animaciones nativas de Flutter (`AnimationController`, `AnimatedBuilder`, `TweenAnimationBuilder` manuales).
+- **Recomendación:** **`flutter_animate`**.
+- **Trade-offs:** Introduce una dependencia directa (~15KB compilada en web), pero reduce drásticamente el código repetitivo de Tickers y Controllers, evitando memory leaks por controllers no liberados y facilitando la creación de secuencias coordinadas.
+- **Aprobación del usuario:** APROBADO por el usuario el 2026-10-31 (Opción A).
+
+---
+
+### ADR-007 — Sistema de Glassmorphism Óptico y Espejo Cósmico (Frosted Mirror Glass)
+- **Estado:** APPROVED
+- **Fecha:** 2026-10-31
+- **Contexto:** Se solicitó elevar la inmersión visual implementando un efecto de glassmorphism de fondo entre el contenido y el fondo con características de espejo (óptica de refracción, borde biselado especular, gradiente frontal de superficie, barrido diagonal de luz en hover, barras de navegación esmeriladas fijas y sombras cáusticas duales neón).
+- **Opciones consideradas:**
+  1. `BackdropFilter` nativo con `ImageFilter.blur` combinado con `CustomPainter` para biseles y destellos, y `LinearGradient` de atenuación especular.
+  2. Uso de imágenes rasterizadas prediseñadas semitransparentes como fondos.
+  3. Paquetes de terceros de glassmorphism no mantenidos (`glassmorphism`, `glass_kit`).
+- **Recomendación:** **`BackdropFilter` nativo con `CustomPainter` propio**. Proporciona renderizado directo por hardware (CanvasKit/Skia/Wasm), sin dependencias obsoletas, respetando los tokens de accesibilidad y optimizado para widget tests (`AppMotion.isTestEnvironment`).
+- **Trade-offs:** `BackdropFilter` requiere composición gráfica GPU; se mitiga limitando el sigma de desenfoque a 12-16px y usando `ClipRRect`/`ClipRect` contenidos.
+- **Aprobación del usuario:** APROBADO por el usuario el 2026-10-31.
 
