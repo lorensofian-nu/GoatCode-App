@@ -429,9 +429,19 @@ class DashboardScreen extends ConsumerWidget {
                           backgroundColor: AppColors.primaryNeon.withValues(
                             alpha: 0.2,
                           ),
-                          child: const Icon(
-                            Icons.pets,
-                            color: AppColors.primaryNeonLight,
+                          child: Image.asset(
+                            user.currentMascotAsset,
+                            key: ValueKey(
+                              'dash_card_${user.currentMascotAsset}',
+                            ),
+                            width: 28,
+                            height: 28,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(
+                                  Icons.pets,
+                                  color: AppColors.primaryNeonLight,
+                                ),
                           ),
                         ),
                         title: Text(

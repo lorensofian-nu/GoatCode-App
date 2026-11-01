@@ -76,12 +76,27 @@ class _LivesBadgeState extends ConsumerState<LivesBadge> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Image.asset(
+                user.currentMascotAsset,
+                key: ValueKey(user.currentMascotAsset),
+                width: 20,
+                height: 20,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => Icon(
+                  user.goatMood.showsSadGesture
+                      ? Icons.sentiment_dissatisfied
+                      : Icons.pets,
+                  size: 16,
+                  color: heartColor,
+                ),
+              ),
+              const SizedBox(width: 5),
               Icon(
                 user.lives > 0 ? Icons.favorite : Icons.favorite_border,
                 color: heartColor,
-                size: 18,
+                size: 16,
               ),
-              const SizedBox(width: 5),
+              const SizedBox(width: 4),
               Text(
                 widget.compact
                     ? '${user.lives}'

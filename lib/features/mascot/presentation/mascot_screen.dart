@@ -222,8 +222,9 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
                             label: const Text('Atuendo seleccionado'),
                             selected: !_previewCurrentMood,
                             onSelected: (val) {
-                              if (val)
+                              if (val) {
                                 setState(() => _previewCurrentMood = false);
+                              }
                             },
                           ),
                           ChoiceChip(
@@ -237,8 +238,9 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
                             ),
                             selected: _previewCurrentMood,
                             onSelected: (val) {
-                              if (val)
+                              if (val) {
                                 setState(() => _previewCurrentMood = true);
+                              }
                             },
                           ),
                         ],

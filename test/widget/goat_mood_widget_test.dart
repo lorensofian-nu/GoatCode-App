@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:goat_code/core/storage/local_storage_service.dart';
+import 'package:goat_code/core/widgets/lives_badge.dart';
 import 'package:goat_code/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:goat_code/features/mascot/presentation/mascot_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   testWidgets(
-    'DashboardScreen displays sad goat and sad mood indicator when lives <= 2',
+    'DashboardScreen displays sad goat and sad mood indicator when lives < 5',
     (tester) async {
       tester.view.physicalSize = const Size(1280, 1000);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
 
-      // Pre-populate SharedPreferences with only 2 lives
+      // Pre-populate SharedPreferences with 2 lives
       SharedPreferences.setMockInitialValues({
         'goat_user_name': 'Sofia',
         'goat_user_lives': 2,
@@ -43,7 +44,7 @@ void main() {
             (widget.image as AssetImage).assetName ==
                 'assets/mascot/goat_sad.png',
       );
-      expect(imageFinder, findsOneWidget);
+      expect(imageFinder, findsWidgets);
     },
   );
 
@@ -79,7 +80,7 @@ void main() {
           (widget.image as AssetImage).assetName ==
               'assets/mascot/goat_happy.png',
     );
-    expect(imageFinder, findsOneWidget);
+    expect(imageFinder, findsWidgets);
   });
 
   testWidgets(
@@ -121,4 +122,32 @@ void main() {
       expect(find.text('Gesto Triste (Por vidas bajas)'), findsOneWidget);
     },
   );
+
+  testWidgets('LivesBadge displays goat icon and turns sad when lives < 5', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({
+      'goat_user_name': 'Sofia',
+      'goat_user_lives': 4,
+    });
+    final prefs = await SharedPreferences.getInstance();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+        child: const MaterialApp(home: Scaffold(body: LivesBadge())),
+      ),
+    );
+    await tester.pump();
+
+    // Verify goat sad image is present in badge
+    final badgeGoat = find.byWidgetPredicate(
+      (widget) =>
+          widget is Image &&
+          widget.image is AssetImage &&
+          (widget.image as AssetImage).assetName ==
+              'assets/mascot/goat_sad.png',
+    );
+    expect(badgeGoat, findsOneWidget);
+  });
 }

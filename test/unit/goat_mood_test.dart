@@ -6,38 +6,26 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('GoatMood domain logic and rules', () {
-    test('5 and 4 lives result in GoatMood.happy with non-sad gesture', () {
+    test('5 lives (max) result in GoatMood.happy with non-sad gesture', () {
       final mood5 = GoatMoodExtension.fromLives(5);
       expect(mood5, GoatMood.happy);
       expect(mood5.showsSadGesture, isFalse);
       expect(mood5.isConsiderableLifeLoss, isFalse);
       expect(mood5.getMascotAsset(), 'assets/mascot/goat_happy.png');
-
-      final mood4 = GoatMoodExtension.fromLives(4);
-      expect(mood4, GoatMood.happy);
-      expect(mood4.showsSadGesture, isFalse);
     });
 
-    test('3 lives result in GoatMood.attentive with neutral gesture', () {
-      final mood3 = GoatMoodExtension.fromLives(3);
-      expect(mood3, GoatMood.attentive);
-      expect(mood3.showsSadGesture, isFalse);
-      expect(mood3.isConsiderableLifeLoss, isFalse);
-      expect(mood3.getMascotAsset(), 'assets/mascot/goat_idle.png');
-    });
-
-    test('2 and 1 lives (considerable loss) result in GoatMood.sad and goat_sad.png', () {
-      final mood2 = GoatMoodExtension.fromLives(2);
-      expect(mood2, GoatMood.sad);
-      expect(mood2.showsSadGesture, isTrue);
-      expect(mood2.isConsiderableLifeLoss, isTrue);
-      expect(mood2.getMascotAsset(), 'assets/mascot/goat_sad.png');
-
-      final mood1 = GoatMoodExtension.fromLives(1);
-      expect(mood1, GoatMood.sad);
-      expect(mood1.showsSadGesture, isTrue);
-      expect(mood1.isConsiderableLifeLoss, isTrue);
-      expect(mood1.getMascotAsset(), 'assets/mascot/goat_sad.png');
+    test('Losing lives (4, 3, 2, 1 lives) results in GoatMood.sad and goat_sad.png', () {
+      for (final lives in [4, 3, 2, 1]) {
+        final mood = GoatMoodExtension.fromLives(lives);
+        expect(
+          mood,
+          GoatMood.sad,
+          reason: 'Lives $lives should result in GoatMood.sad',
+        );
+        expect(mood.showsSadGesture, isTrue);
+        expect(mood.isConsiderableLifeLoss, isTrue);
+        expect(mood.getMascotAsset(), 'assets/mascot/goat_sad.png');
+      }
     });
 
     test('0 lives result in GoatMood.critical with sad gesture', () {
@@ -48,8 +36,8 @@ void main() {
       expect(mood0.getMascotAsset(), 'assets/mascot/goat_sad.png');
     });
 
-    test('Considerable life loss (<= 2 lives) overrides cosmetic skins to goat_sad.png', () {
-      final moodLow = GoatMoodExtension.fromLives(2);
+    test('Losing lives overrides cosmetic skins to goat_sad.png', () {
+      final moodLow = GoatMoodExtension.fromLives(4);
       expect(
         moodLow.getMascotAsset(userSkin: 'teacher'),
         'assets/mascot/goat_sad.png',
@@ -63,7 +51,7 @@ void main() {
         'assets/mascot/goat_sad.png',
       );
 
-      // But with healthy lives (>= 3), cosmetic skins are preserved
+      // But with full lives (5), cosmetic skins are preserved
       final moodHealthy = GoatMoodExtension.fromLives(5);
       expect(
         moodHealthy.getMascotAsset(userSkin: 'teacher'),
@@ -80,9 +68,9 @@ void main() {
     });
 
     test('Contextual speech messages reflect available lives and mood', () {
-      final moodSad = GoatMoodExtension.fromLives(2);
-      final sadMsg = moodSad.getSpeechMessage(lives: 2);
-      expect(sadMsg.contains('2 vidas'), isTrue);
+      final moodSad = GoatMoodExtension.fromLives(4);
+      final sadMsg = moodSad.getSpeechMessage(lives: 4);
+      expect(sadMsg.contains('4/5'), isTrue);
       expect(sadMsg.toLowerCase().contains('triste'), isTrue);
 
       final moodCritical = GoatMoodExtension.fromLives(0);
@@ -119,24 +107,25 @@ void main() {
           'assets/mascot/goat_happy.png',
         );
 
-        // Lose 1st life (4 lives): still happy
+        // Lose 1st life (4 lives): icon turns SAD immediately
         await container.read(userProfileProvider.notifier).loseLife();
         expect(container.read(userProfileProvider).lives, 4);
-        expect(container.read(userProfileProvider).goatMood, GoatMood.happy);
-
-        // Lose 2nd life (3 lives): attentive
-        await container.read(userProfileProvider.notifier).loseLife();
-        expect(container.read(userProfileProvider).lives, 3);
-        expect(
-          container.read(userProfileProvider).goatMood,
-          GoatMood.attentive,
-        );
+        expect(container.read(userProfileProvider).goatMood, GoatMood.sad);
         expect(
           container.read(userProfileProvider).currentMascotAsset,
-          'assets/mascot/goat_idle.png',
+          'assets/mascot/goat_sad.png',
         );
 
-        // Lose 3rd life (2 lives) -> Considerable drop! Mood changes to sad
+        // Lose 2nd life (3 lives): still sad
+        await container.read(userProfileProvider.notifier).loseLife();
+        expect(container.read(userProfileProvider).lives, 3);
+        expect(container.read(userProfileProvider).goatMood, GoatMood.sad);
+        expect(
+          container.read(userProfileProvider).currentMascotAsset,
+          'assets/mascot/goat_sad.png',
+        );
+
+        // Lose 3rd life (2 lives): still sad
         await container.read(userProfileProvider.notifier).loseLife();
         final state2 = container.read(userProfileProvider);
         expect(state2.lives, 2);
@@ -144,7 +133,7 @@ void main() {
         expect(state2.goatMood.showsSadGesture, isTrue);
         expect(state2.currentMascotAsset, 'assets/mascot/goat_sad.png');
 
-        // Lose 4th life (1 life) -> Still sad
+        // Lose 4th life (1 life): still sad
         await container.read(userProfileProvider.notifier).loseLife();
         final state1 = container.read(userProfileProvider);
         expect(state1.lives, 1);

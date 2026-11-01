@@ -81,8 +81,8 @@ class AdaptiveScaffold extends ConsumerWidget {
               selectedIndex: selectedIndex,
               onDestinationSelected: (idx) =>
                   _onDestinationSelected(context, idx),
-              destinations: const [
-                NavigationDestination(
+              destinations: [
+                const NavigationDestination(
                   icon: Icon(Icons.home_outlined),
                   selectedIcon: Icon(
                     Icons.home,
@@ -90,7 +90,7 @@ class AdaptiveScaffold extends ConsumerWidget {
                   ),
                   label: 'Inicio',
                 ),
-                NavigationDestination(
+                const NavigationDestination(
                   icon: Icon(Icons.auto_stories_outlined),
                   selectedIcon: Icon(
                     Icons.auto_stories,
@@ -98,20 +98,40 @@ class AdaptiveScaffold extends ConsumerWidget {
                   ),
                   label: 'Cursos',
                 ),
-                NavigationDestination(
+                const NavigationDestination(
                   icon: Icon(Icons.map_outlined),
                   selectedIcon: Icon(Icons.map, color: AppColors.secondaryCyan),
                   label: 'Ruta',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.pets_outlined),
-                  selectedIcon: Icon(
-                    Icons.pets,
-                    color: AppColors.secondaryCyan,
+                  icon: Image.asset(
+                    user.currentMascotAsset,
+                    key: ValueKey('nav_${user.currentMascotAsset}'),
+                    width: 22,
+                    height: 22,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => Icon(
+                      user.goatMood.showsSadGesture
+                          ? Icons.sentiment_dissatisfied
+                          : Icons.pets_outlined,
+                    ),
+                  ),
+                  selectedIcon: Image.asset(
+                    user.currentMascotAsset,
+                    key: ValueKey('nav_sel_${user.currentMascotAsset}'),
+                    width: 24,
+                    height: 24,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => Icon(
+                      user.goatMood.showsSadGesture
+                          ? Icons.sentiment_dissatisfied
+                          : Icons.pets,
+                      color: AppColors.secondaryCyan,
+                    ),
                   ),
                   label: 'Cabra',
                 ),
-                NavigationDestination(
+                const NavigationDestination(
                   icon: Icon(Icons.person_outline),
                   selectedIcon: Icon(
                     Icons.person,
@@ -428,6 +448,22 @@ class AdaptiveScaffold extends ConsumerWidget {
             selectedIndex == 3,
             isDesktop,
             scale,
+            customIcon: Image.asset(
+              user.currentMascotAsset,
+              key: ValueKey('rail_${user.currentMascotAsset}'),
+              width: 24,
+              height: 24,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => Icon(
+                user.goatMood.showsSadGesture
+                    ? Icons.sentiment_dissatisfied
+                    : Icons.pets_rounded,
+                color: selectedIndex == 3
+                    ? AppColors.secondaryCyan
+                    : AppColors.textMuted,
+                size: 24,
+              ),
+            ),
           ),
           _railItem(
             context,
@@ -492,8 +528,9 @@ class AdaptiveScaffold extends ConsumerWidget {
     String label,
     bool isSelected,
     bool isDesktop,
-    double scale,
-  ) {
+    double scale, {
+    Widget? customIcon,
+  }) {
     return InkWell(
       onTap: () => _onDestinationSelected(context, index),
       borderRadius: BorderRadius.circular(12),
@@ -514,11 +551,14 @@ class AdaptiveScaffold extends ConsumerWidget {
               ? MainAxisAlignment.start
               : MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              color: isSelected ? AppColors.secondaryCyan : AppColors.textMuted,
-              size: 24,
-            ),
+            customIcon ??
+                Icon(
+                  icon,
+                  color: isSelected
+                      ? AppColors.secondaryCyan
+                      : AppColors.textMuted,
+                  size: 24,
+                ),
             if (isDesktop) ...[
               const SizedBox(width: 12),
               Expanded(
