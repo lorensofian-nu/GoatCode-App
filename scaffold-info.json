@@ -1,0 +1,8 @@
+{
+  "package": "antigravity-flutter-learning-starter",
+  "generated_on": "2026-10-31",
+  "purpose": "Antigravity CLI multi-agent scaffold for a responsive Flutter Web programming-learning platform",
+  "agent_count": 7,
+  "skill_count": 5,
+  "note": "Configuration and planning scaffold; not a runnable Flutter application until product discovery and Flutter bootstrap are completed."
+}
