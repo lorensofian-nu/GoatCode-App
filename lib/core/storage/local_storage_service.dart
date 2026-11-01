@@ -130,7 +130,8 @@ class LocalStorageService {
   Future<bool> setSoundEnabled(bool value) =>
       _prefs.setBool(_keySoundEnabled, value);
 
-  bool getGlassEffectEnabled() => _prefs.getBool(_keyGlassEffectEnabled) ?? true;
+  bool getGlassEffectEnabled() =>
+      _prefs.getBool(_keyGlassEffectEnabled) ?? true;
   Future<bool> setGlassEffectEnabled(bool value) =>
       _prefs.setBool(_keyGlassEffectEnabled, value);
 

@@ -26,27 +26,30 @@ void main() {
     expect(state.formattedTimeUntilNextLife, '00:00');
   });
 
-  test('losing lives through notifier updates state and formatted countdown',
-      () async {
-    final container = ProviderContainer(
-      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
-    );
-    addTearDown(container.dispose);
+  test(
+    'losing lives through notifier updates state and formatted countdown',
+    () async {
+      final container = ProviderContainer(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      );
+      addTearDown(container.dispose);
 
-    final initial = container.read(userProfileProvider);
-    expect(initial.lives, 5);
+      final initial = container.read(userProfileProvider);
+      expect(initial.lives, 5);
 
-    final remaining =
-        await container.read(userProfileProvider.notifier).loseLife();
-    expect(remaining, 4);
+      final remaining = await container
+          .read(userProfileProvider.notifier)
+          .loseLife();
+      expect(remaining, 4);
 
-    final updated = container.read(userProfileProvider);
-    expect(updated.lives, 4);
-    expect(updated.secondsToNextLife, greaterThan(0));
+      final updated = container.read(userProfileProvider);
+      expect(updated.lives, 4);
+      expect(updated.secondsToNextLife, greaterThan(0));
 
-    await container.read(userProfileProvider.notifier).refillLives();
-    final refilled = container.read(userProfileProvider);
-    expect(refilled.lives, 5);
-    expect(refilled.secondsToNextLife, 0);
-  });
+      await container.read(userProfileProvider.notifier).refillLives();
+      final refilled = container.read(userProfileProvider);
+      expect(refilled.lives, 5);
+      expect(refilled.secondsToNextLife, 0);
+    },
+  );
 }

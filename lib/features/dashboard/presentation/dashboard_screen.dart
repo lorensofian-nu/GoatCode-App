@@ -28,25 +28,7 @@ class DashboardScreen extends ConsumerWidget {
         : 0.0;
     final percentInt = (progress * 100).toInt();
 
-    String mascotAsset = 'assets/mascot/goat_idle.png';
-    final skin = user.mascotSkin;
-    if (skin == 'teacher') {
-      mascotAsset = 'assets/mascot/goat_teacher.png';
-    } else if (skin == 'rocker') {
-      mascotAsset = 'assets/mascot/goat_rocker.png';
-    } else if (skin == 'happy') {
-      mascotAsset = 'assets/mascot/goat_happy.png';
-    } else if (skin == 'baby') {
-      mascotAsset = 'assets/mascot/goat_baby.png';
-    } else if (skin == 'sad') {
-      mascotAsset = 'assets/mascot/goat_sad.png';
-    } else if (skin == 'shy') {
-      mascotAsset = 'assets/mascot/goat_shy.png';
-    } else if (skin == 'grumpy') {
-      mascotAsset = 'assets/mascot/goat_grumpy.png';
-    } else if (skin == 'shocked') {
-      mascotAsset = 'assets/mascot/goat_shocked.png';
-    }
+    final mascotAsset = user.currentMascotAsset;
 
     return SingleChildScrollView(
       padding: EdgeInsets.all(ResponsiveLayout.horizontalPadding(context)),
@@ -146,8 +128,9 @@ class DashboardScreen extends ConsumerWidget {
                                 onPressed: () {
                                   final nextLesson = SampleLessons.allLessons
                                       .firstWhere(
-                                        (l) =>
-                                            !user.completedLessons.contains(l.id),
+                                        (l) => !user.completedLessons.contains(
+                                          l.id,
+                                        ),
                                         orElse: () =>
                                             SampleLessons.allLessons.first,
                                       );
@@ -161,12 +144,14 @@ class DashboardScreen extends ConsumerWidget {
                                     vertical: 6,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: AppColors.heartYellow
-                                        .withValues(alpha: 0.12),
+                                    color: AppColors.heartYellow.withValues(
+                                      alpha: 0.12,
+                                    ),
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
-                                      color: AppColors.heartYellow
-                                          .withValues(alpha: 0.35),
+                                      color: AppColors.heartYellow.withValues(
+                                        alpha: 0.35,
+                                      ),
                                     ),
                                   ),
                                   child: Row(
@@ -197,15 +182,15 @@ class DashboardScreen extends ConsumerWidget {
                     if (!ResponsiveLayout.isCompact(context)) ...[
                       const SizedBox(width: 24),
                       SizedBox(
-                        width: 210,
+                        width: 230,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             MascotSpeechBubble(
-                              text: user.streak > 0
-                                  ? '¡Llevas ${user.streak} días seguidos! Tu constancia fortalece tu lógica.'
-                                  : '¡Hola! Aprender programación es como armar un rompecabezas. ¡Vamos paso a paso!',
-                              title: 'GoatCode',
+                              text: user.mascotSpeechMessage,
+                              title: user.goatMood.showsSadGesture
+                                  ? 'GoatCode • Ánimo: ${user.goatMood.shortLabel}'
+                                  : 'GoatCode',
                               scale: scale,
                             ),
                             const SizedBox(height: 10),
@@ -215,6 +200,7 @@ class DashboardScreen extends ConsumerWidget {
                               scale: scale,
                               child: Image.asset(
                                 mascotAsset,
+                                key: ValueKey(mascotAsset),
                                 width: 100,
                                 height: 100,
                                 fit: BoxFit.contain,
@@ -225,6 +211,43 @@ class DashboardScreen extends ConsumerWidget {
                                       size: 70,
                                     ),
                               ).animateBreathing(),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: user.goatMood.color.withValues(
+                                  alpha: 0.15,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: user.goatMood.color.withValues(
+                                    alpha: 0.45,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    user.goatMood.icon,
+                                    size: 13,
+                                    color: user.goatMood.color,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    'Ánimo: ${user.goatMood.shortLabel}',
+                                    style: TextStyle(
+                                      color: user.goatMood.color,
+                                      fontSize: 11 * scale,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -337,8 +360,9 @@ class DashboardScreen extends ConsumerWidget {
                                 onPressed: () {
                                   final firstIncomplete = mod.lessons
                                       .firstWhere(
-                                        (l) => !user.completedLessons
-                                            .contains(l.id),
+                                        (l) => !user.completedLessons.contains(
+                                          l.id,
+                                        ),
                                         orElse: () => mod.lessons.first,
                                       );
                                   context.go('/lesson/${firstIncomplete.id}');

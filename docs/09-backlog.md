@@ -40,5 +40,6 @@
 | **TSK-022** | Motion UI en Dashboard, Lección (shake/celebrate), Mascota (breathing/podio) y Roadmap | `flutter-developer` | M | TSK-021 | **DONE** |
 | **TSK-023** | Pruebas de integración de Motion UI, compatibilidad de tests y compilación web | `quality-auditor` | S | TSK-022 | **DONE** |
 | **TSK-024** | Implementación del sistema de 5 vidas y recarga temporal en rama feature | `flutter-developer` | M | ADR-008 | **DONE** |
+| **TSK-025** | Regla de estado de ánimo dinámico y cambio a gesto triste al bajar vidas | `flutter-developer` | S | ADR-009 | **DONE** |
 
 

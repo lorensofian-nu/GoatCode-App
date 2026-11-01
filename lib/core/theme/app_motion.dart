@@ -90,12 +90,11 @@ extension AppMotionWidgetExtensions on Widget {
   /// Horizontal shake animation for incorrect responses or invalid form inputs.
   Widget animateShake() {
     if (AppMotion.isTestEnvironment) return this;
-    return animate()
-        .shakeX(
-          amount: 6,
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.easeInOut,
-        );
+    return animate().shakeX(
+      amount: 6,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+    );
   }
 
   /// Slide-in reveal for explanations, alerts, hints and feedback banners.

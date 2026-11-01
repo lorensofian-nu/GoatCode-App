@@ -14,11 +14,7 @@ class CosmicBackground extends StatelessWidget {
     return Stack(
       children: [
         // Base dark background
-        Positioned.fill(
-          child: Container(
-            color: AppColors.backgroundDark,
-          ),
-        ),
+        Positioned.fill(child: Container(color: AppColors.backgroundDark)),
 
         // Top-left Violet Nebula Orb
         Positioned(

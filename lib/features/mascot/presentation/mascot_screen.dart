@@ -17,6 +17,7 @@ class MascotScreen extends ConsumerStatefulWidget {
 
 class _MascotScreenState extends ConsumerState<MascotScreen> {
   late String _selectedSkin;
+  bool _previewCurrentMood = false;
 
   final List<Map<String, String>> _skins = [
     {
@@ -119,7 +120,78 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
               'Elige cómo quieres que tu compañera cabra se vista durante tus lecciones y en el dashboard.',
               style: AppTypography.body(scale),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 16),
+
+            // Banner explicativo de la Regla de Estado de Ánimo según vidas disponibles
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: user.goatMood.color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: user.goatMood.color.withValues(alpha: 0.35),
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    user.goatMood.icon,
+                    color: user.goatMood.color,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Estado de Ánimo: ${user.goatMood.displayName}',
+                              style: AppTypography.headingSmall(scale).copyWith(
+                                color: user.goatMood.color,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.heartYellow.withValues(
+                                  alpha: 0.2,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                '${user.lives}/${user.maxLives} ❤️',
+                                style: TextStyle(
+                                  color: AppColors.heartYellow,
+                                  fontSize: 11 * scale,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          user.goatMood.showsSadGesture
+                              ? 'Al haber bajado a ${user.lives} vidas (cantidad considerable), el gesto de tu cabra cambia automáticamente a triste para acompañarte. Puedes cambiar su atuendo, el cual volverá a lucir animado cuando recargues vidas.'
+                              : 'Regla activa: El estado de ánimo de tu cabra refleja tus vidas en tiempo real. Si tus vidas bajan a 2 o menos, su gesto cambiará a triste.',
+                          style: AppTypography.caption(scale)
+                              .copyWith(color: AppColors.textPrimary),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
 
             // Main Stage: Podium & Mascot (Wireframe 04 center)
             Card(
@@ -141,13 +213,47 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
                 ),
                 child: Column(
                   children: [
+                    if (user.goatMood.showsSadGesture) ...[
+                      Wrap(
+                        spacing: 8,
+                        alignment: WrapAlignment.center,
+                        children: [
+                          ChoiceChip(
+                            label: const Text('Atuendo seleccionado'),
+                            selected: !_previewCurrentMood,
+                            onSelected: (val) {
+                              if (val)
+                                setState(() => _previewCurrentMood = false);
+                            },
+                          ),
+                          ChoiceChip(
+                            avatar: Icon(
+                              Icons.sentiment_dissatisfied,
+                              size: 16,
+                              color: user.goatMood.color,
+                            ),
+                            label: Text(
+                              'Gesto triste actual (${user.lives} vidas)',
+                            ),
+                            selected: _previewCurrentMood,
+                            onSelected: (val) {
+                              if (val)
+                                setState(() => _previewCurrentMood = true);
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                     MascotStreakAura(
                       streak: user.streak,
                       size: 210,
                       scale: scale,
                       child: Image.asset(
-                        activeSkinData['asset']!,
-                        key: ValueKey(_selectedSkin),
+                        (_previewCurrentMood && user.goatMood.showsSadGesture)
+                            ? 'assets/mascot/goat_sad.png'
+                            : activeSkinData['asset']!,
+                        key: ValueKey('${_selectedSkin}_$_previewCurrentMood'),
                         width: 180,
                         height: 180,
                         fit: BoxFit.contain,
@@ -161,13 +267,17 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      activeSkinData['name']!,
+                      (_previewCurrentMood && user.goatMood.showsSadGesture)
+                          ? 'Gesto Triste (Por vidas bajas)'
+                          : activeSkinData['name']!,
                       style: AppTypography.headingMedium(scale)
                           .copyWith(color: AppColors.secondaryCyan),
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      activeSkinData['desc']!,
+                      (_previewCurrentMood && user.goatMood.showsSadGesture)
+                          ? 'Tu cabra siente empatía cuando quedan pocas vidas (${user.lives}/${user.maxLives}).'
+                          : activeSkinData['desc']!,
                       style: AppTypography.bodyMuted(scale),
                       textAlign: TextAlign.center,
                     ),

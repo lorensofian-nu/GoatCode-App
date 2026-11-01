@@ -1,11 +1,12 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_motion.dart';
 
 /// A fixed horizontal reading progress bar with cosmic neon glow.
 /// Indicates real-time scrolling progress through the lesson theory.
-class ReadingProgressBar extends StatelessWidget implements PreferredSizeWidget {
+class ReadingProgressBar extends StatelessWidget
+    implements PreferredSizeWidget {
   final double progress;
   final double height;
   final Color? glowColor;
@@ -26,7 +27,8 @@ class ReadingProgressBar extends StatelessWidget implements PreferredSizeWidget 
     final activeGlow = glowColor ?? AppColors.secondaryCyan;
 
     return Semantics(
-      label: 'Progreso de lectura de la lección: ${(clampedProgress * 100).toInt()}%',
+      label:
+          'Progreso de lectura de la lección: ${(clampedProgress * 100).toInt()}%',
       value: '${(clampedProgress * 100).toInt()}%',
       child: Container(
         height: height,
@@ -43,10 +45,7 @@ class ReadingProgressBar extends StatelessWidget implements PreferredSizeWidget 
               height: height,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [
-                    AppColors.primaryNeon,
-                    AppColors.secondaryCyan,
-                  ],
+                  colors: [AppColors.primaryNeon, AppColors.secondaryCyan],
                 ),
                 boxShadow: [
                   BoxShadow(

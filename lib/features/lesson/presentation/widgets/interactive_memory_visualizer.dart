@@ -60,24 +60,21 @@ class _InteractiveMemoryVisualizerState
       return const [
         MemoryStep(
           lineIndex: 0,
-          explanation:
-              'Paso 1: Se crea la variable "vidas" y se almacena el número 3 en la memoria.',
+          explanation: 'Paso 1: Se crea la variable "vidas" y se almacena el número 3 en la memoria.',
           variableName: 'vidas',
           variableValue: '3',
           variableType: 'int',
         ),
         MemoryStep(
           lineIndex: 1,
-          explanation:
-              'Paso 2: Se calcula 3 - 1 = 2 y se sobrescribe el contenido de "vidas".',
+          explanation: 'Paso 2: Se calcula 3 - 1 = 2 y se sobrescribe el contenido de "vidas".',
           variableName: 'vidas',
           variableValue: '2',
           variableType: 'int',
         ),
         MemoryStep(
           lineIndex: 2,
-          explanation:
-              'Paso 3: print() lee el valor final de la caja y lo muestra en pantalla.',
+          explanation: 'Paso 3: print() lee el valor final de la caja y lo muestra en pantalla.',
           variableName: 'vidas',
           variableValue: '2',
           variableType: 'int',
@@ -90,24 +87,21 @@ class _InteractiveMemoryVisualizerState
       return const [
         MemoryStep(
           lineIndex: 0,
-          explanation:
-              'Paso 1: Guardamos el texto "Ada Lovelace" en la variable "nombre".',
+          explanation: 'Paso 1: Guardamos el texto "Ada Lovelace" en la variable "nombre".',
           variableName: 'nombre',
           variableValue: '"Ada Lovelace"',
           variableType: 'String',
         ),
         MemoryStep(
           lineIndex: 1,
-          explanation:
-              'Paso 2: Guardamos el número decimal 36.5 en la variable "temperatura".',
+          explanation: 'Paso 2: Guardamos el número decimal 36.5 en la variable "temperatura".',
           variableName: 'temperatura',
           variableValue: '36.5',
           variableType: 'double',
         ),
         MemoryStep(
           lineIndex: 2,
-          explanation:
-              'Paso 3: Guardamos el estado lógico "true" (verdadero) en "esMayorDeEdad".',
+          explanation: 'Paso 3: Guardamos el estado lógico "true" (verdadero) en "esMayorDeEdad".',
           variableName: 'esMayorDeEdad',
           variableValue: 'true',
           variableType: 'bool',

@@ -110,3 +110,16 @@ Estados: `PROPOSED`, `APPROVED`, `REJECTED`, `DEFERRED`.
 - **Trade-offs:** La recarga está sujeta a la hora del reloj del dispositivo en este MVP 100% offline, pero garantiza que la experiencia del usuario sea fluida, respetuosa y educativa.
 - **Aprobación del usuario:** Solicitado y aprobado explícitamente por el usuario el 2026-10-31.
 
+---
+
+### ADR-009 — Regla de estado de ánimo dinámico y gesto triste de la mascota según vidas disponibles
+- **Estado:** APPROVED
+- **Fecha:** 2026-11-01
+- **Contexto:** El usuario solicitó la siguiente regla explícita: "al bajar una cantidad considerable de vidas, el gesto de la cabra cambia a triste... Regla de que el estado de ánimo de la cabra dependerá de las vidas disponibles en el momento."
+- **Opciones consideradas:**
+  1. Modelo de dominio unificado `GoatMood` (`happy`, `attentive`, `sad`, `critical`), derivado reactivamente de `lives / maxLives`. Cuando las vidas bajan a 2 o menos (pérdida de >= 60% de vidas), el gesto de la cabra conmuta obligatoriamente a triste (`assets/mascot/goat_sad.png`), adaptando transversalmente el avatar de navegación (`AdaptiveScaffold`), la tarjeta principal de Dashboard, los bocadillos de diálogo pedagógicos (`MascotSpeechBubble`), la pantalla de personalización (`MascotScreen`) y el diálogo de vidas (`LivesBadge`).
+  2. Cambio aislado únicamente en la pantalla de lección al errar una respuesta (insuficiente porque no cumplía la regla sistémica de que el estado de ánimo dependa de las vidas disponibles en el momento).
+- **Recomendación:** **Opción 1: Modelo reactivo transversal `GoatMood`**. Asegura coherencia y empatía pedagógica. Si el usuario pierde vidas en cualquier reto y vuelve al Dashboard o navega por la app, la cabra empatiza visualmente con un gesto triste y diálogos comprensivos sin ser condescendiente ni punitiva.
+- **Trade-offs:** El gesto triste prioriza la empatía sobre atuendos cosméticos (`userSkin`) mientras las vidas sean bajas (<= 2). En `MascotScreen` se añade un selector de previsualización para permitir inspeccionar atuendos o el gesto triste en tiempo real.
+- **Aprobación del usuario:** Solicitado por el usuario el 2026-11-01.
+

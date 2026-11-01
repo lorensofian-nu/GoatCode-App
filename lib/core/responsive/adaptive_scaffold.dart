@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -63,13 +64,7 @@ class AdaptiveScaffold extends ConsumerWidget {
         child: Row(
           children: [
             if (!isCompact)
-              _buildNavigationRail(
-                context,
-                ref,
-                selectedIndex,
-                user.streak,
-                scale,
-              ),
+              _buildNavigationRail(context, ref, user, selectedIndex, scale),
             Expanded(
               child: Column(
                 children: [
@@ -153,10 +148,7 @@ class AdaptiveScaffold extends ConsumerWidget {
             ? const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xF5130E26),
-                  Color(0xEA0D0A1C),
-                ],
+                colors: [Color(0xF5130E26), Color(0xEA0D0A1C)],
               )
             : null,
         border: const Border(
@@ -167,7 +159,8 @@ class AdaptiveScaffold extends ConsumerWidget {
         children: [
           if (isCompact) ...[
             Image.asset(
-              'assets/mascot/goat_idle.png',
+              user.currentMascotAsset,
+              key: ValueKey(user.currentMascotAsset),
               width: 28,
               height: 28,
               fit: BoxFit.contain,
@@ -259,10 +252,7 @@ class AdaptiveScaffold extends ConsumerWidget {
             ),
           ),
           const SizedBox(width: 8),
-          LivesBadge(
-            compact: isCompact,
-            showCountdown: !isCompact,
-          ),
+          LivesBadge(compact: isCompact, showCountdown: !isCompact),
           if (!isCompact) ...[
             const SizedBox(width: 4),
             IconButton(
@@ -329,13 +319,14 @@ class AdaptiveScaffold extends ConsumerWidget {
   Widget _buildNavigationRail(
     BuildContext context,
     WidgetRef ref,
+    UserProfileState user,
     int selectedIndex,
-    int streak,
     double scale,
   ) {
     final isDesktop = ResponsiveLayout.isExpanded(context);
     final accessibility = ref.watch(accessibilityProvider);
     final isGlass = accessibility.glassEffectEnabled;
+    final mascotAsset = user.currentMascotAsset;
 
     final railContent = Container(
       width: isDesktop ? 220 : 76,
@@ -345,10 +336,7 @@ class AdaptiveScaffold extends ConsumerWidget {
             ? const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Color(0xF5130E26),
-                  Color(0xEA0D0A1C),
-                ],
+                colors: [Color(0xF5130E26), Color(0xEA0D0A1C)],
               )
             : null,
         border: const Border(
@@ -364,7 +352,8 @@ class AdaptiveScaffold extends ConsumerWidget {
                 ? Row(
                     children: [
                       Image.asset(
-                        'assets/mascot/goat_idle.png',
+                        mascotAsset,
+                        key: ValueKey(mascotAsset),
                         width: 38,
                         height: 38,
                         fit: BoxFit.contain,
@@ -390,7 +379,8 @@ class AdaptiveScaffold extends ConsumerWidget {
                   )
                 : Center(
                     child: Image.asset(
-                      'assets/mascot/goat_idle.png',
+                      mascotAsset,
+                      key: ValueKey(mascotAsset),
                       width: 38,
                       height: 38,
                       fit: BoxFit.contain,

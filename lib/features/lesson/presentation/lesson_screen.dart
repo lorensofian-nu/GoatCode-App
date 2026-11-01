@@ -140,337 +140,342 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                 ),
                 child: ResponsiveContainer(
                   maxWidth: 820,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (_showHint) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: MascotSpeechBubble(
-                      title: 'Pista de GoatCode',
-                      text: lesson.hint,
-                      scale: scale,
-                    ),
-                  ),
-                ],
-
-                // Section 1: TEORÍA (Wireframe 03)
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryNeon.withValues(
-                                  alpha: 0.2,
-                                ),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                'TEORÍA',
-                                style: TextStyle(
-                                  color: AppColors.primaryNeonLight,
-                                  fontSize: 12 * scale,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 1.1,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                lesson.analogyTitle,
-                                style: AppTypography.headingSmall(scale),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 14),
-                        Text(
-                          lesson.analogyText,
-                          style: AppTypography.body(scale),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (_showHint) ...[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: MascotSpeechBubble(
+                            title: 'Pista de GoatCode',
+                            text: lesson.hint,
+                            scale: scale,
+                          ),
                         ),
                       ],
-                    ),
-                  ),
-                ).animateEntrance(index: 0),
-                const SizedBox(height: 20),
 
-                // Section 2: EJEMPLO DE CÓDIGO (Wireframe 03)
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.secondaryCyan.withValues(
-                                  alpha: 0.15,
-                                ),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                'EJEMPLO',
-                                style: TextStyle(
-                                  color: AppColors.secondaryCyan,
-                                  fontSize: 12 * scale,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 1.1,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              'Código estructurado y simulación',
-                              style: AppTypography.caption(scale),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 14),
-                        InteractiveMemoryVisualizer(
-                          code: lesson.codeSnippet,
-                          lessonId: lesson.id,
-                          scale: scale,
-                        ),
-                      ],
-                    ),
-                  ),
-                ).animateEntrance(index: 1),
-                const SizedBox(height: 20),
-
-                // Section 3: PREGUNTA INTERACTIVA (Wireframe 03)
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.streakFire.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            'PREGUNTA PRÁCTICA',
-                            style: TextStyle(
-                              color: AppColors.streakFire,
-                              fontSize: 12 * scale,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1.1,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          lesson.question,
-                          style: AppTypography.headingSmall(scale),
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Options list
-                        ...List.generate(lesson.choices.length, (idx) {
-                          final choice = lesson.choices[idx];
-                          final isSelected = _selectedChoiceIndex == idx;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
-                            child: InkWell(
-                              onTap: _showFeedback
-                                  ? null
-                                  : () => setState(
-                                      () => _selectedChoiceIndex = idx,
+                      // Section 1: TEORÍA (Wireframe 03)
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
                                     ),
-                              borderRadius: BorderRadius.circular(14),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primaryNeon.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      'TEORÍA',
+                                      style: TextStyle(
+                                        color: AppColors.primaryNeonLight,
+                                        fontSize: 12 * scale,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: 1.1,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      lesson.analogyTitle,
+                                      style: AppTypography.headingSmall(scale),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 14),
+                              Text(
+                                lesson.analogyText,
+                                style: AppTypography.body(scale),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ).animateEntrance(index: 0),
+                      const SizedBox(height: 20),
+
+                      // Section 2: EJEMPLO DE CÓDIGO (Wireframe 03)
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.secondaryCyan.withValues(
+                                        alpha: 0.15,
+                                      ),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      'EJEMPLO',
+                                      style: TextStyle(
+                                        color: AppColors.secondaryCyan,
+                                        fontSize: 12 * scale,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: 1.1,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    'Código estructurado y simulación',
+                                    style: AppTypography.caption(scale),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 14),
+                              InteractiveMemoryVisualizer(
+                                code: lesson.codeSnippet,
+                                lessonId: lesson.id,
+                                scale: scale,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ).animateEntrance(index: 1),
+                      const SizedBox(height: 20),
+
+                      // Section 3: PREGUNTA INTERACTIVA (Wireframe 03)
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 16,
+                                  horizontal: 8,
+                                  vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? AppColors.primaryNeon.withValues(
-                                          alpha: 0.2,
-                                        )
-                                      : const Color(0xFF130F24),
-                                  borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(
-                                    color: isSelected
-                                        ? AppColors.secondaryCyan
-                                        : AppColors.surfaceBorder,
-                                    width: isSelected ? 2.0 : 1.0,
+                                  color: AppColors.streakFire.withValues(
+                                    alpha: 0.15,
+                                  ),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  'PREGUNTA PRÁCTICA',
+                                  style: TextStyle(
+                                    color: AppColors.streakFire,
+                                    fontSize: 12 * scale,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 1.1,
                                   ),
                                 ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 22,
-                                      height: 22,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                lesson.question,
+                                style: AppTypography.headingSmall(scale),
+                              ),
+                              const SizedBox(height: 20),
+
+                              // Options list
+                              ...List.generate(lesson.choices.length, (idx) {
+                                final choice = lesson.choices[idx];
+                                final isSelected = _selectedChoiceIndex == idx;
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 12.0),
+                                  child: InkWell(
+                                    onTap: _showFeedback
+                                        ? null
+                                        : () => setState(
+                                            () => _selectedChoiceIndex = idx,
+                                          ),
+                                    borderRadius: BorderRadius.circular(14),
+                                    child: AnimatedContainer(
+                                      duration: const Duration(
+                                        milliseconds: 200,
+                                      ),
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 16,
+                                      ),
                                       decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
+                                        color: isSelected
+                                            ? AppColors.primaryNeon.withValues(
+                                                alpha: 0.2,
+                                              )
+                                            : const Color(0xFF130F24),
+                                        borderRadius: BorderRadius.circular(14),
                                         border: Border.all(
                                           color: isSelected
                                               ? AppColors.secondaryCyan
-                                              : AppColors.textMuted,
-                                          width: 2,
+                                              : AppColors.surfaceBorder,
+                                          width: isSelected ? 2.0 : 1.0,
                                         ),
-                                        color: isSelected
-                                            ? AppColors.secondaryCyan
-                                            : Colors.transparent,
                                       ),
-                                      child: isSelected
-                                          ? const Center(
-                                              child: Icon(
-                                                Icons.check,
-                                                size: 14,
-                                                color: Colors.black,
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 22,
+                                            height: 22,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: isSelected
+                                                    ? AppColors.secondaryCyan
+                                                    : AppColors.textMuted,
+                                                width: 2,
                                               ),
-                                            )
-                                          : null,
-                                    ),
-                                    const SizedBox(width: 14),
-                                    Expanded(
-                                      child: Text(
-                                        choice.text,
-                                        style: TextStyle(
-                                          color: isSelected
-                                              ? AppColors.textPrimary
-                                              : AppColors.textSecondary,
-                                          fontWeight: isSelected
-                                              ? FontWeight.w600
-                                              : FontWeight.w400,
-                                          fontSize: 15 * scale,
-                                        ),
+                                              color: isSelected
+                                                  ? AppColors.secondaryCyan
+                                                  : Colors.transparent,
+                                            ),
+                                            child: isSelected
+                                                ? const Center(
+                                                    child: Icon(
+                                                      Icons.check,
+                                                      size: 14,
+                                                      color: Colors.black,
+                                                    ),
+                                                  )
+                                                : null,
+                                          ),
+                                          const SizedBox(width: 14),
+                                          Expanded(
+                                            child: Text(
+                                              choice.text,
+                                              style: TextStyle(
+                                                color: isSelected
+                                                    ? AppColors.textPrimary
+                                                    : AppColors.textSecondary,
+                                                fontWeight: isSelected
+                                                    ? FontWeight.w600
+                                                    : FontWeight.w400,
+                                                fontSize: 15 * scale,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        }),
-                      ],
-                    ),
-                  ),
-                ).animateEntrance(index: 2),
-                const SizedBox(height: 24),
-
-                // Feedback Banner if evaluated
-                if (_showFeedback) ...[
-                  _buildFeedbackCard(lesson, scale),
-                  const SizedBox(height: 24),
-                ],
-
-                // Out of lives warning banner if user has 0 lives
-                if (user.lives == 0 && !_showFeedback) ...[
-                  Card(
-                    color: const Color(0xFF262010),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      side: const BorderSide(
-                        color: AppColors.heartYellow,
-                        width: 1.2,
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.favorite_border,
-                            color: AppColors.heartYellow,
-                            size: 28,
+                                  ),
+                                );
+                              }),
+                            ],
                           ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                        ),
+                      ).animateEntrance(index: 2),
+                      const SizedBox(height: 24),
+
+                      // Feedback Banner if evaluated
+                      if (_showFeedback) ...[
+                        _buildFeedbackCard(lesson, scale),
+                        const SizedBox(height: 24),
+                      ],
+
+                      // Out of lives warning banner if user has 0 lives
+                      if (user.lives == 0 && !_showFeedback) ...[
+                        Card(
+                          color: const Color(0xFF262010),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            side: const BorderSide(
+                              color: AppColors.heartYellow,
+                              width: 1.2,
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
                               children: [
-                                Text(
-                                  '¡Sin vidas disponibles!',
-                                  style: TextStyle(
-                                    color: AppColors.heartYellow,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14 * scale,
+                                const Icon(
+                                  Icons.favorite_border,
+                                  color: AppColors.heartYellow,
+                                  size: 28,
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '¡Sin vidas disponibles!',
+                                        style: TextStyle(
+                                          color: AppColors.heartYellow,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 14 * scale,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Próxima vida en: ${user.formattedTimeUntilNextLife}. Espera la recarga o recarga tus vidas.',
+                                        style: AppTypography.caption(scale),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Próxima vida en: ${user.formattedTimeUntilNextLife}. Espera la recarga o recarga tus vidas.',
-                                  style: AppTypography.caption(scale),
+                                TextButton(
+                                  onPressed: () =>
+                                      showLivesDialog(context, ref),
+                                  child: const Text('Recargar'),
                                 ),
                               ],
                             ),
                           ),
-                          TextButton(
-                            onPressed: () => showLivesDialog(context, ref),
-                            child: const Text('Recargar'),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+
+                      // Action Button
+                      if (!_showFeedback)
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: user.lives == 0
+                                ? () => showLivesDialog(context, ref)
+                                : (_selectedChoiceIndex == null
+                                      ? null
+                                      : () => _evaluate(lesson)),
+                            style: user.lives == 0
+                                ? ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF262010),
+                                    foregroundColor: AppColors.heartYellow,
+                                  )
+                                : null,
+                            child: Text(
+                              user.lives == 0
+                                  ? 'Sin vidas (Toca para recargar)'
+                                  : 'Comprobar respuesta',
+                              style: TextStyle(fontSize: 16 * scale),
+                            ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
+                        ),
 
-                // Action Button
-                if (!_showFeedback)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: user.lives == 0
-                          ? () => showLivesDialog(context, ref)
-                          : (_selectedChoiceIndex == null
-                              ? null
-                              : () => _evaluate(lesson)),
-                      style: user.lives == 0
-                          ? ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF262010),
-                              foregroundColor: AppColors.heartYellow,
-                            )
-                          : null,
-                      child: Text(
-                        user.lives == 0
-                            ? 'Sin vidas (Toca para recargar)'
-                            : 'Comprobar respuesta',
-                        style: TextStyle(fontSize: 16 * scale),
-                      ),
-                    ),
+                      const SizedBox(height: 32),
+                    ],
                   ),
-
-                const SizedBox(height: 32),
-              ],
-            ),
+                ),
+              ),
+              if (_showFeedback && _isSuccess)
+                const Positioned.fill(child: CosmicConfetti()),
+            ],
           ),
         ),
-        if (_showFeedback && _isSuccess)
-          const Positioned.fill(
-            child: CosmicConfetti(),
-          ),
-      ],
-    ),
-  ),
-),
-);
+      ),
+    );
   }
 
   void _evaluate(Lesson lesson) {
@@ -503,9 +508,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
 
     final mascotImage = isSuccess
         ? 'assets/mascot/goat_happy.png'
-        : (isOutOfLives
-            ? 'assets/mascot/goat_shocked.png'
-            : 'assets/mascot/goat_sad.png');
+        : 'assets/mascot/goat_sad.png';
 
     final card = Card(
       color: isSuccess ? const Color(0xFF0F2B1C) : const Color(0xFF2D1418),
@@ -532,8 +535,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                     isSuccess
                         ? Icons.celebration
                         : (isOutOfLives
-                            ? Icons.heart_broken
-                            : Icons.sentiment_dissatisfied),
+                              ? Icons.heart_broken
+                              : Icons.sentiment_dissatisfied),
                     color: isSuccess
                         ? AppColors.successGreen
                         : AppColors.errorSoft,
@@ -549,8 +552,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                         isSuccess
                             ? '¡Respuesta Correcta! (+100 XP)'
                             : (isOutOfLives
-                                ? '¡Te has quedado sin vidas!'
-                                : 'Casi lo logras... (-1 Vida ❤️)'),
+                                  ? '¡Te has quedado sin vidas!'
+                                  : 'Casi lo logras... (-1 Vida ❤️)'),
                         style: TextStyle(
                           color: isSuccess
                               ? AppColors.successGreen
@@ -564,8 +567,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                         isSuccess
                             ? lesson.explanationSuccess
                             : (isOutOfLives
-                                ? 'Has agotado tus 5 vidas. Tu cabra se está tomando un descanso. Tus vidas se recargarán automáticamente con el tiempo o puedes recargarlas ahora.'
-                                : lesson.explanationFailure),
+                                  ? 'Has agotado tus 5 vidas. Tu cabra se está tomando un descanso. Tus vidas se recargarán automáticamente con el tiempo o puedes recargarlas ahora.'
+                                  : lesson.explanationFailure),
                         style: AppTypography.body(scale),
                       ),
                       if (!isSuccess && !isOutOfLives) ...[

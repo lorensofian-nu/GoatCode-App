@@ -7,7 +7,9 @@ class AppColors {
   // Cosmic Backgrounds
   static const Color backgroundDark = Color(0xFF0C0A17);
   static const Color backgroundCard = Color(0xFF141026);
-  static const Color surfaceGlass = Color(0xF0151128); // 94% opacity for crisp text contrast
+  static const Color surfaceGlass = Color(
+    0xF0151128,
+  ); // 94% opacity for crisp text contrast
   static const Color surfaceGlassLight = Color(0xB8241E3D);
 
   // Borders & Dividers

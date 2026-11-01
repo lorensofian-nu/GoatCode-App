@@ -1,8 +1,8 @@
 # Estado del proyecto — GoatCode
 
-- **Última actualización:** 2026-10-31
-- **Milestone actual:** Feature Vidas (`feature/lives-system`)
-- **Estado general:** FEATURE DE VIDAS IMPLEMENTADA Y VERIFICADA (100% DONE)
+- **Última actualización:** 2026-11-01
+- **Milestone actual:** Feature Vidas y Estado de Ánimo de la Mascota (`feature/lives-system`)
+- **Estado general:** REGLA DE ESTADO DE ÁNIMO Y GESTO TRISTE IMPLEMENTADA Y VERIFICADA (100% DONE)
 
 ## Hecho
 
@@ -61,6 +61,11 @@
     - Iconografía y acento de vidas en color amarillo dorado vibrante (`#FFD21E` / `AppColors.heartYellow`).
     - Integración en `AdaptiveScaffold` (barra superior), `LessonScreen` (AppBar y banner de feedback), `DashboardScreen` y `ProfileScreen`.
     - Modal de aviso y pausa pedagógica amigable cuando las vidas llegan a 0.
+17. **Regla de Estado de Ánimo y Gesto Triste según Vidas (`GoatMood` - ADR-009):**
+    - Modelo de dominio `GoatMood` que calcula reactivamente el estado de ánimo de la cabra a partir de las vidas disponibles.
+    - **Regla:** Cuando las vidas bajan a 2 o menos (bajada considerable de vidas, pérdida de >= 60%), el gesto visual de la cabra conmuta obligatoriamente a triste (`assets/mascot/goat_sad.png`), adaptando su diálogo pedagógico con empatía y aliento.
+    - Sincronización transversal en Dashboard, AppBar y NavigationRail de `AdaptiveScaffold`, selector de atuendos de `MascotScreen`, modal de vidas de `LivesBadge`, lecciones de `LessonScreen` y chip de estado en `ProfileScreen`.
+    - Suite de 38 pruebas unitarias y de widgets en verde (`flutter test`), 0 lints en `flutter analyze` y build web verificado.
 
 ## En curso
 

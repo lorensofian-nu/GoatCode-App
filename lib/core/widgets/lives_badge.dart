@@ -71,9 +71,7 @@ class _LivesBadgeState extends ConsumerState<LivesBadge> {
           decoration: BoxDecoration(
             color: heartColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: heartColor.withValues(alpha: 0.45),
-            ),
+            border: Border.all(color: heartColor.withValues(alpha: 0.45)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -85,7 +83,9 @@ class _LivesBadgeState extends ConsumerState<LivesBadge> {
               ),
               const SizedBox(width: 5),
               Text(
-                widget.compact ? '${user.lives}' : '${user.lives}/${user.maxLives}',
+                widget.compact
+                    ? '${user.lives}'
+                    : '${user.lives}/${user.maxLives}',
                 style: TextStyle(
                   color: heartColor,
                   fontWeight: FontWeight.w700,
@@ -95,7 +95,10 @@ class _LivesBadgeState extends ConsumerState<LivesBadge> {
               if (widget.showCountdown && user.lives < user.maxLives) ...[
                 const SizedBox(width: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 1,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(10),
@@ -120,10 +123,7 @@ class _LivesBadgeState extends ConsumerState<LivesBadge> {
 }
 
 void showLivesDialog(BuildContext context, WidgetRef ref) {
-  showDialog(
-    context: context,
-    builder: (ctx) => const _LivesDialogContent(),
-  );
+  showDialog(context: context, builder: (ctx) => const _LivesDialogContent());
 }
 
 class _LivesDialogContent extends ConsumerStatefulWidget {
@@ -162,12 +162,8 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
     final accessibility = ref.watch(accessibilityProvider);
     final scale = accessibility.textScale.scaleFactor;
 
-    String mascotAsset = 'assets/mascot/goat_happy.png';
-    if (user.lives == 0) {
-      mascotAsset = 'assets/mascot/goat_shocked.png';
-    } else if (user.lives <= 2) {
-      mascotAsset = 'assets/mascot/goat_sad.png';
-    }
+    final mascotAsset = user.currentMascotAsset;
+    final mood = user.goatMood;
 
     return Dialog(
       backgroundColor: const Color(0xFF161226),
@@ -227,6 +223,33 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
                       ? AppColors.heartYellow
                       : AppColors.warningAmber,
                   fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: mood.color.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: mood.color.withValues(alpha: 0.4)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(mood.icon, size: 15, color: mood.color),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Ánimo: ${mood.displayName}',
+                      style: TextStyle(
+                        color: mood.color,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12 * scale,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 16),
@@ -319,11 +342,9 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
               ],
 
               Text(
-                'Cada respuesta incorrecta en un reto resta 1 vida. Si te quedas sin vidas, puedes esperar a que se recarguen o recargarlas al instante.',
-                style: AppTypography.caption(scale).copyWith(
-                  color: AppColors.textSecondary,
-                  height: 1.4,
-                ),
+                'Cada respuesta incorrecta en un reto resta 1 vida. Si tus vidas bajan considerablemente (2 o menos), el gesto de la cabra cambiará a triste para acompañarte.',
+                style: AppTypography.caption(scale)
+                    .copyWith(color: AppColors.textSecondary, height: 1.4),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),

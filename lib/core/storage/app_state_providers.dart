@@ -1,7 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../features/mascot/domain/goat_mood.dart';
 import '../theme/app_typography.dart';
 import 'local_storage_service.dart';
+
+export '../../features/mascot/domain/goat_mood.dart';
 
 class UserProfileState {
   final String? username;
@@ -28,6 +31,21 @@ class UserProfileState {
 
   bool get isOnboarded => username != null && username!.isNotEmpty;
   bool get hasLives => lives > 0;
+
+  /// Estado de ánimo de la cabra derivado dinámicamente de las vidas disponibles.
+  GoatMood get goatMood => GoatMoodExtension.fromLives(lives, maxLives);
+
+  /// Asset de imagen del gesto de la cabra. Si bajó una cantidad considerable de vidas (<= 2),
+  /// el gesto cambia a 'assets/mascot/goat_sad.png'.
+  String get currentMascotAsset =>
+      goatMood.getMascotAsset(userSkin: mascotSkin);
+
+  /// Diálogo contextual de la cabra según su estado de ánimo y vidas.
+  String get mascotSpeechMessage => goatMood.getSpeechMessage(
+    streak: streak,
+    lives: lives,
+    maxLives: maxLives,
+  );
 
   String get formattedTimeUntilNextLife {
     final m = secondsToNextLife ~/ 60;
@@ -86,10 +104,7 @@ class UserProfileNotifier extends Notifier<UserProfileState> {
     final currentLives = storage.getLives();
     final seconds = storage.getSecondsToNextLife();
     if (currentLives != state.lives || seconds != state.secondsToNextLife) {
-      state = state.copyWith(
-        lives: currentLives,
-        secondsToNextLife: seconds,
-      );
+      state = state.copyWith(lives: currentLives, secondsToNextLife: seconds);
     }
   }
 
@@ -115,10 +130,7 @@ class UserProfileNotifier extends Notifier<UserProfileState> {
     final storage = ref.read(localStorageServiceProvider);
     final newLives = await storage.loseLife();
     final seconds = storage.getSecondsToNextLife();
-    state = state.copyWith(
-      lives: newLives,
-      secondsToNextLife: seconds,
-    );
+    state = state.copyWith(lives: newLives, secondsToNextLife: seconds);
     return newLives;
   }
 

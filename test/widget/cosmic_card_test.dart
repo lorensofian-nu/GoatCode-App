@@ -41,40 +41,42 @@ void main() {
       expect(tapped, isTrue);
     });
 
-    testWidgets('CosmicCard renders in Matte Obsidian mode without BackdropFilter', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: CosmicCard(
-              enableGlassEffect: false,
-              child: Text('Matte Obsidian Content'),
+    testWidgets(
+      'CosmicCard renders in Matte Obsidian mode without BackdropFilter',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: CosmicCard(
+                enableGlassEffect: false,
+                child: Text('Matte Obsidian Content'),
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('Matte Obsidian Content'), findsOneWidget);
-      expect(find.byType(BackdropFilter), findsNothing);
-    });
+        expect(find.text('Matte Obsidian Content'), findsOneWidget);
+        expect(find.byType(BackdropFilter), findsNothing);
+      },
+    );
 
-    testWidgets('CosmicCard renders in Frosted Glass mode with BackdropFilter', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: CosmicCard(
-              enableGlassEffect: true,
-              child: Text('Frosted Glass Content'),
+    testWidgets(
+      'CosmicCard renders in Frosted Glass mode with BackdropFilter',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: CosmicCard(
+                enableGlassEffect: true,
+                child: Text('Frosted Glass Content'),
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('Frosted Glass Content'), findsOneWidget);
-      expect(find.byType(BackdropFilter), findsOneWidget);
-    });
+        expect(find.text('Frosted Glass Content'), findsOneWidget);
+        expect(find.byType(BackdropFilter), findsOneWidget);
+      },
+    );
   });
 }
