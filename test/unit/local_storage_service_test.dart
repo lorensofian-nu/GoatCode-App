@@ -55,12 +55,18 @@ void main() {
     test('accessibility settings persist', () async {
       expect(storage.getTextScale(), TextScaleLevel.normal);
       expect(storage.getHighContrast(), isFalse);
+      expect(storage.getSoundEnabled(), isTrue);
+      expect(storage.getGlassEffectEnabled(), isTrue);
 
       await storage.setTextScale(TextScaleLevel.large);
       await storage.setHighContrast(true);
+      await storage.setSoundEnabled(false);
+      await storage.setGlassEffectEnabled(false);
 
       expect(storage.getTextScale(), TextScaleLevel.large);
       expect(storage.getHighContrast(), isTrue);
+      expect(storage.getSoundEnabled(), isFalse);
+      expect(storage.getGlassEffectEnabled(), isFalse);
     });
   });
 }
