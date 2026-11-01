@@ -133,7 +133,7 @@ class ProfileScreen extends ConsumerWidget {
                               _statChip(
                                 Icons.favorite,
                                 '${user.lives}/${user.maxLives} vidas',
-                                const Color(0xFFFF4B4B),
+                                AppColors.heartYellow,
                                 scale,
                               ),
                               _statChip(

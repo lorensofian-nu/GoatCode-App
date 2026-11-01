@@ -382,11 +382,11 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                 // Out of lives warning banner if user has 0 lives
                 if (user.lives == 0 && !_showFeedback) ...[
                   Card(
-                    color: const Color(0xFF2A1015),
+                    color: const Color(0xFF262010),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                       side: const BorderSide(
-                        color: Color(0xFFFF4B4B),
+                        color: AppColors.heartYellow,
                         width: 1.2,
                       ),
                     ),
@@ -396,7 +396,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                         children: [
                           const Icon(
                             Icons.favorite_border,
-                            color: Color(0xFFFF4B4B),
+                            color: AppColors.heartYellow,
                             size: 28,
                           ),
                           const SizedBox(width: 14),
@@ -407,7 +407,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                                 Text(
                                   '¡Sin vidas disponibles!',
                                   style: TextStyle(
-                                    color: const Color(0xFFFF4B4B),
+                                    color: AppColors.heartYellow,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 14 * scale,
                                   ),
@@ -443,8 +443,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                               : () => _evaluate(lesson)),
                       style: user.lives == 0
                           ? ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2E1922),
-                              foregroundColor: const Color(0xFFFF5964),
+                              backgroundColor: const Color(0xFF262010),
+                              foregroundColor: AppColors.heartYellow,
                             )
                           : null,
                       child: Text(
@@ -563,14 +563,14 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                           children: [
                             const Icon(
                               Icons.favorite,
-                              color: Color(0xFFFF4B4B),
+                              color: AppColors.heartYellow,
                               size: 16,
                             ),
                             const SizedBox(width: 6),
                             Text(
                               'Te quedan ${user.lives} vidas.',
                               style: TextStyle(
-                                color: const Color(0xFFFF7B7B),
+                                color: AppColors.heartYellow,
                                 fontSize: 13 * scale,
                                 fontWeight: FontWeight.w600,
                               ),

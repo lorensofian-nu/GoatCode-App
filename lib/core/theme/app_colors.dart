@@ -28,6 +28,8 @@ class AppColors {
     0xFFFF7A00,
   ); // Duolingo style streak fire
   static const Color streakFireGlow = Color(0x66FF7A00);
+  static const Color heartYellow = Color(0xFFFFD21E); // Golden yellow for lives
+  static const Color heartYellowGlow = Color(0x66FFD21E);
   static const Color successGreen = Color(0xFF00E676);
   static const Color warningAmber = Color(0xFFFFB300);
   static const Color errorSoft = Color(0xFFFF5252);

@@ -157,12 +157,12 @@ class DashboardScreen extends ConsumerWidget {
                                     vertical: 6,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFFF4B4B)
+                                    color: AppColors.heartYellow
                                         .withValues(alpha: 0.12),
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
-                                      color: const Color(0xFFFF4B4B)
-                                          .withValues(alpha: 0.3),
+                                      color: AppColors.heartYellow
+                                          .withValues(alpha: 0.35),
                                     ),
                                   ),
                                   child: Row(
@@ -171,13 +171,13 @@ class DashboardScreen extends ConsumerWidget {
                                       const Icon(
                                         Icons.favorite,
                                         size: 14,
-                                        color: Color(0xFFFF4B4B),
+                                        color: AppColors.heartYellow,
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
                                         '${user.lives}/${user.maxLives} • Recarga en ${user.formattedTimeUntilNextLife}',
                                         style: TextStyle(
-                                          color: const Color(0xFFFF7B7B),
+                                          color: AppColors.heartYellow,
                                           fontSize: 12 * scale,
                                           fontWeight: FontWeight.w600,
                                         ),

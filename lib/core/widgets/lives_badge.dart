@@ -53,8 +53,8 @@ class _LivesBadgeState extends ConsumerState<LivesBadge> {
     final isLowLives = user.lives <= 1;
 
     final heartColor = isLowLives
-        ? const Color(0xFFFF4B4B)
-        : const Color(0xFFFF5964);
+        ? AppColors.warningAmber
+        : AppColors.heartYellow;
 
     return InkWell(
       onTap: () => showLivesDialog(context, ref),
@@ -189,7 +189,7 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
                 fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) => const Icon(
                   Icons.favorite,
-                  color: Color(0xFFFF4B4B),
+                  color: AppColors.heartYellow,
                   size: 64,
                 ),
               ),
@@ -211,7 +211,7 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
                     child: Icon(
                       isFilled ? Icons.favorite : Icons.favorite_border,
                       color: isFilled
-                          ? const Color(0xFFFF4B4B)
+                          ? AppColors.heartYellow
                           : AppColors.textMuted.withValues(alpha: 0.4),
                       size: 32,
                     ),
@@ -224,8 +224,8 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
                 '${user.lives} de ${user.maxLives} vidas disponibles',
                 style: AppTypography.headingSmall(scale).copyWith(
                   color: user.lives > 0
-                      ? const Color(0xFFFF4B4B)
-                      : AppColors.errorSoft,
+                      ? AppColors.heartYellow
+                      : AppColors.warningAmber,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -239,7 +239,7 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
                     color: const Color(0xFF20172E),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: const Color(0xFFFF4B4B).withValues(alpha: 0.3),
+                      color: AppColors.heartYellow.withValues(alpha: 0.35),
                     ),
                   ),
                   child: Column(
