@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,15 +12,38 @@ import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/roadmap/presentation/roadmap_screen.dart';
 
+/// Listenable that notifies GoRouter when user profile state changes
+/// without disposing and recreating the GoRouter instance.
+class RouterNotifier extends ChangeNotifier {
+  final Ref _ref;
+
+  RouterNotifier(this._ref) {
+    _ref.listen<UserProfileState>(
+      userProfileProvider,
+      (previous, next) => notifyListeners(),
+    );
+  }
+}
+
+final routerNotifierProvider = Provider<RouterNotifier>((ref) {
+  return RouterNotifier(ref);
+});
+
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final user = ref.watch(userProfileProvider);
+  final notifier = ref.watch(routerNotifierProvider);
 
   return GoRouter(
     initialLocation: '/dashboard',
+    refreshListenable: notifier,
     redirect: (context, state) {
-      final isOnboarding = state.matchedLocation == '/onboarding';
+      final user = ref.read(userProfileProvider);
+      final loc = state.matchedLocation;
+      final isOnboarding = loc == '/onboarding';
       final hasUsername = user.isOnboarded;
 
+      if (loc == '/') {
+        return hasUsername ? '/dashboard' : '/onboarding';
+      }
       if (!hasUsername && !isOnboarding) {
         return '/onboarding';
       }
@@ -29,13 +53,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
+      // Root route redirect
+      GoRoute(
+        path: '/',
+        redirect: (context, state) {
+          final user = ref.read(userProfileProvider);
+          return user.isOnboarded ? '/dashboard' : '/onboarding';
+        },
+      ),
+
       // Onboarding Screen (Outside Shell)
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),
       ),
 
-      // Inmersive Lesson Screen (Outside Shell for maximum focus)
+      // Immersive Lesson Screen (Outside Shell for maximum focus)
       GoRoute(
         path: '/lesson/:lessonId',
         builder: (context, state) {

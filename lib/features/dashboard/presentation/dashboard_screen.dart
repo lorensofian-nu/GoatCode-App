@@ -25,12 +25,13 @@ class DashboardScreen extends ConsumerWidget {
     final percentInt = (progress * 100).toInt();
 
     String mascotAsset = 'assets/mascot/goat_idle.jpeg';
-    if (user.mascotSkin == 'teacher')
+    if (user.mascotSkin == 'teacher') {
       mascotAsset = 'assets/mascot/goat_teacher.jpeg';
-    if (user.mascotSkin == 'rocker')
+    } else if (user.mascotSkin == 'rocker') {
       mascotAsset = 'assets/mascot/goat_rocker.jpeg';
-    if (user.mascotSkin == 'happy')
+    } else if (user.mascotSkin == 'happy') {
       mascotAsset = 'assets/mascot/goat_happy.jpeg';
+    }
 
     return SingleChildScrollView(
       padding: EdgeInsets.all(ResponsiveLayout.horizontalPadding(context)),
