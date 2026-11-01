@@ -69,8 +69,8 @@ void main() {
       ),
     );
 
-    // Select incorrect option B) 5
-    final optionB = find.text('B) 5');
+    // Select incorrect option B) 2
+    final optionB = find.text('B) 2');
     expect(optionB, findsOneWidget);
     await tester.ensureVisible(optionB);
     await tester.tap(optionB);

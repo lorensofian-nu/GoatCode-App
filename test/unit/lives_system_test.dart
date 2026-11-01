@@ -13,22 +13,17 @@ void main() {
   });
 
   test('UserProfileProvider initializes with 5 lives and max lives', () {
-    final container = ProviderScope(
+    final container = ProviderContainer(
       overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
-      child: Consumer(
-        builder: (context, ref, child) {
-          final state = ref.watch(userProfileProvider);
-          expect(state.lives, 5);
-          expect(state.maxLives, 5);
-          expect(state.hasLives, isTrue);
-          expect(state.secondsToNextLife, 0);
-          expect(state.formattedTimeUntilNextLife, '00:00');
-          return const SizedBox.shrink();
-        },
-      ),
     );
+    addTearDown(container.dispose);
 
-    expect(container, isNotNull);
+    final state = container.read(userProfileProvider);
+    expect(state.lives, 5);
+    expect(state.maxLives, 5);
+    expect(state.hasLives, isTrue);
+    expect(state.secondsToNextLife, 0);
+    expect(state.formattedTimeUntilNextLife, '00:00');
   });
 
   test('losing lives through notifier updates state and formatted countdown',

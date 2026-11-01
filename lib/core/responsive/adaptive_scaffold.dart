@@ -153,15 +153,17 @@ class AdaptiveScaffold extends ConsumerWidget {
                 size: 22,
               ),
             ),
-            const SizedBox(width: 6),
-            Text(
-              'GoatCode',
-              style: AppTypography.headingSmall(scale).copyWith(
-                color: AppColors.secondaryCyan,
-                fontWeight: FontWeight.w700,
-                fontSize: 15 * scale,
+            if (MediaQuery.sizeOf(context).width > 420) ...[
+              const SizedBox(width: 6),
+              Text(
+                'GoatCode',
+                style: AppTypography.headingSmall(scale).copyWith(
+                  color: AppColors.secondaryCyan,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15 * scale,
+                ),
               ),
-            ),
+            ],
           ],
           const Spacer(),
           Semantics(
