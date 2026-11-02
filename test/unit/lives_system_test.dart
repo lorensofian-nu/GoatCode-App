@@ -26,27 +26,64 @@ void main() {
     expect(state.formattedTimeUntilNextLife, '00:00');
   });
 
-  test('losing lives through notifier updates state and formatted countdown',
-      () async {
+  test(
+    'losing lives through notifier updates state and formatted countdown',
+    () async {
+      final container = ProviderContainer(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      );
+      addTearDown(container.dispose);
+
+      final initial = container.read(userProfileProvider);
+      expect(initial.lives, 5);
+
+      final remaining = await container
+          .read(userProfileProvider.notifier)
+          .loseLife();
+      expect(remaining, 4);
+
+      final updated = container.read(userProfileProvider);
+      expect(updated.lives, 4);
+      expect(updated.secondsToNextLife, greaterThan(0));
+
+      await container.read(userProfileProvider.notifier).refillLives();
+      final refilled = container.read(userProfileProvider);
+      expect(refilled.lives, 5);
+      expect(refilled.secondsToNextLife, 0);
+    },
+  );
+
+  test('recoverLife works only after 15 minutes have passed', () async {
     final container = ProviderContainer(
       overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
     );
     addTearDown(container.dispose);
 
-    final initial = container.read(userProfileProvider);
-    expect(initial.lives, 5);
+    await container.read(userProfileProvider.notifier).loseLife();
+    expect(container.read(userProfileProvider).lives, 4);
+    expect(container.read(userProfileProvider).canRecoverLife, isFalse);
 
-    final remaining =
-        await container.read(userProfileProvider.notifier).loseLife();
-    expect(remaining, 4);
+    // Attempting to recover early should fail
+    final early = await container
+        .read(userProfileProvider.notifier)
+        .recoverLife();
+    expect(early, 4);
 
-    final updated = container.read(userProfileProvider);
-    expect(updated.lives, 4);
-    expect(updated.secondsToNextLife, greaterThan(0));
+    // Fast-forward 16 minutes
+    final sixteenMinutesAgo = DateTime.now()
+        .subtract(const Duration(minutes: 16))
+        .millisecondsSinceEpoch;
+    await prefs.setInt('goat_last_life_loss_timestamp', sixteenMinutesAgo);
 
-    await container.read(userProfileProvider.notifier).refillLives();
-    final refilled = container.read(userProfileProvider);
-    expect(refilled.lives, 5);
-    expect(refilled.secondsToNextLife, 0);
+    container.read(userProfileProvider.notifier).refreshLives();
+    expect(container.read(userProfileProvider).canRecoverLife, isTrue);
+
+    // Now recovery succeeds
+    final recovered = await container
+        .read(userProfileProvider.notifier)
+        .recoverLife();
+    expect(recovered, 5);
+    expect(container.read(userProfileProvider).lives, 5);
+    expect(container.read(userProfileProvider).canRecoverLife, isFalse);
   });
 }

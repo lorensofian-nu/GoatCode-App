@@ -27,16 +27,19 @@ class _LivesBadgeState extends ConsumerState<LivesBadge> {
   @override
   void initState() {
     super.initState();
-    if (widget.showCountdown) {
-      _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-        if (mounted) {
-          final user = ref.read(userProfileProvider);
-          if (user.lives < user.maxLives) {
-            ref.read(userProfileProvider.notifier).refreshLives();
-          }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(userProfileProvider.notifier).refreshLives();
+      }
+    });
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) {
+        final user = ref.read(userProfileProvider);
+        if (user.lives < user.maxLives) {
+          ref.read(userProfileProvider.notifier).refreshLives();
         }
-      });
-    }
+      }
+    });
   }
 
   @override
@@ -71,21 +74,36 @@ class _LivesBadgeState extends ConsumerState<LivesBadge> {
           decoration: BoxDecoration(
             color: heartColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: heartColor.withValues(alpha: 0.45),
-            ),
+            border: Border.all(color: heartColor.withValues(alpha: 0.45)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Image.asset(
+                user.currentMascotAsset,
+                key: ValueKey(user.currentMascotAsset),
+                width: 20,
+                height: 20,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => Icon(
+                  user.goatMood.showsSadGesture
+                      ? Icons.sentiment_dissatisfied
+                      : Icons.pets,
+                  size: 16,
+                  color: heartColor,
+                ),
+              ),
+              const SizedBox(width: 5),
               Icon(
                 user.lives > 0 ? Icons.favorite : Icons.favorite_border,
                 color: heartColor,
-                size: 18,
+                size: 16,
               ),
-              const SizedBox(width: 5),
+              const SizedBox(width: 4),
               Text(
-                widget.compact ? '${user.lives}' : '${user.lives}/${user.maxLives}',
+                widget.compact
+                    ? '${user.lives}'
+                    : '${user.lives}/${user.maxLives}',
                 style: TextStyle(
                   color: heartColor,
                   fontWeight: FontWeight.w700,
@@ -95,7 +113,10 @@ class _LivesBadgeState extends ConsumerState<LivesBadge> {
               if (widget.showCountdown && user.lives < user.maxLives) ...[
                 const SizedBox(width: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 1,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(10),
@@ -120,10 +141,7 @@ class _LivesBadgeState extends ConsumerState<LivesBadge> {
 }
 
 void showLivesDialog(BuildContext context, WidgetRef ref) {
-  showDialog(
-    context: context,
-    builder: (ctx) => const _LivesDialogContent(),
-  );
+  showDialog(context: context, builder: (ctx) => const _LivesDialogContent());
 }
 
 class _LivesDialogContent extends ConsumerStatefulWidget {
@@ -140,6 +158,11 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(userProfileProvider.notifier).refreshLives();
+      }
+    });
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) {
         final user = ref.read(userProfileProvider);
@@ -162,12 +185,8 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
     final accessibility = ref.watch(accessibilityProvider);
     final scale = accessibility.textScale.scaleFactor;
 
-    String mascotAsset = 'assets/mascot/goat_happy.png';
-    if (user.lives == 0) {
-      mascotAsset = 'assets/mascot/goat_shocked.png';
-    } else if (user.lives <= 2) {
-      mascotAsset = 'assets/mascot/goat_sad.png';
-    }
+    final mascotAsset = user.currentMascotAsset;
+    final mood = user.goatMood;
 
     return Dialog(
       backgroundColor: const Color(0xFF161226),
@@ -229,58 +248,143 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
                   fontWeight: FontWeight.w700,
                 ),
               ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: mood.color.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: mood.color.withValues(alpha: 0.4)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(mood.icon, size: 15, color: mood.color),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Ánimo: ${mood.displayName}',
+                      style: TextStyle(
+                        color: mood.color,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12 * scale,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 16),
 
               if (user.lives < user.maxLives) ...[
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF20172E),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: AppColors.heartYellow.withValues(alpha: 0.35),
+                if (user.canRecoverLife) ...[
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.successGreen.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppColors.successGreen.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.check_circle_rounded,
+                              color: AppColors.successGreen,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '¡15 minutos cumplidos!',
+                              style: TextStyle(
+                                color: AppColors.successGreen,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14 * scale,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Ya puedes recuperar 1 vida para tu cabra.',
+                          style: AppTypography.caption(scale)
+                              .copyWith(color: AppColors.textPrimary),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 12),
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.favorite, size: 18),
+                          label: const Text('Recuperar 1 vida (+1 ❤️)'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.successGreen,
+                            foregroundColor: Colors.black,
+                          ),
+                          onPressed: () async {
+                            await ref
+                                .read(userProfileProvider.notifier)
+                                .recoverLife();
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.timer_outlined,
-                            color: AppColors.secondaryCyan,
-                            size: 18,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Próxima vida en:',
-                            style: AppTypography.caption(scale),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            user.formattedTimeUntilNextLife,
-                            style: TextStyle(
+                ] else ...[
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF20172E),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: AppColors.heartYellow.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.timer_outlined,
                               color: AppColors.secondaryCyan,
-                              fontSize: 16 * scale,
-                              fontWeight: FontWeight.w700,
-                              fontFamily: 'monospace',
+                              size: 18,
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Se recarga 1 vida cada 15 minutos automáticamente.',
-                        style: AppTypography.caption(scale).copyWith(
-                          fontSize: 11 * scale,
-                          color: AppColors.textMuted,
+                            const SizedBox(width: 8),
+                            Text(
+                              'Tiempo de espera:',
+                              style: AppTypography.caption(scale),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              user.formattedTimeUntilNextLife,
+                              style: TextStyle(
+                                color: AppColors.secondaryCyan,
+                                fontSize: 16 * scale,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: 'monospace',
+                              ),
+                            ),
+                          ],
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                        const SizedBox(height: 6),
+                        Text(
+                          'Se tiene que esperar a que pasen los 15 minutos para poder recuperarla. No se puede recuperar automáticamente.',
+                          style: AppTypography.caption(scale).copyWith(
+                            fontSize: 11 * scale,
+                            color: AppColors.textMuted,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                ],
                 const SizedBox(height: 16),
               ] else ...[
                 Container(
@@ -304,12 +408,15 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
                         size: 18,
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        '¡Tus vidas están al máximo!',
-                        style: TextStyle(
-                          color: AppColors.successGreen,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13 * scale,
+                      Flexible(
+                        child: Text(
+                          '¡Tus vidas están al máximo!',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: AppColors.successGreen,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13 * scale,
+                          ),
                         ),
                       ),
                     ],
@@ -319,11 +426,9 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
               ],
 
               Text(
-                'Cada respuesta incorrecta en un reto resta 1 vida. Si te quedas sin vidas, puedes esperar a que se recarguen o recargarlas al instante.',
-                style: AppTypography.caption(scale).copyWith(
-                  color: AppColors.textSecondary,
-                  height: 1.4,
-                ),
+                'Cada respuesta incorrecta en un reto resta 1 vida. Al perder vidas, el estado de la cabra cambia a Cabra Triste. Para poder recuperar una vida se tiene que esperar a que pasen los 15 minutos (no se puede recuperar automáticamente).',
+                style: AppTypography.caption(scale)
+                    .copyWith(color: AppColors.textSecondary, height: 1.4),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
@@ -331,16 +436,6 @@ class _LivesDialogContentState extends ConsumerState<_LivesDialogContent> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  if (user.lives < user.maxLives) ...[
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        ref.read(userProfileProvider.notifier).refillLives();
-                      },
-                      icon: const Icon(Icons.flash_on, size: 16),
-                      label: const Text('Recargar Vidas'),
-                    ),
-                    const SizedBox(width: 10),
-                  ],
                   ElevatedButton(
                     onPressed: () => Navigator.of(context).pop(),
                     child: const Text('Entendido'),

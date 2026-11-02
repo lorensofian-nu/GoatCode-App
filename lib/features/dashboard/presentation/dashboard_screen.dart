@@ -8,6 +8,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/cosmic_card.dart';
+import '../../../core/widgets/lives_badge.dart';
 import '../../../core/widgets/mascot_speech_bubble.dart';
 import '../../../core/widgets/mascot_streak_aura.dart';
 import '../../lesson/data/sample_lessons.dart';
@@ -28,25 +29,7 @@ class DashboardScreen extends ConsumerWidget {
         : 0.0;
     final percentInt = (progress * 100).toInt();
 
-    String mascotAsset = 'assets/mascot/goat_idle.png';
-    final skin = user.mascotSkin;
-    if (skin == 'teacher') {
-      mascotAsset = 'assets/mascot/goat_teacher.png';
-    } else if (skin == 'rocker') {
-      mascotAsset = 'assets/mascot/goat_rocker.png';
-    } else if (skin == 'happy') {
-      mascotAsset = 'assets/mascot/goat_happy.png';
-    } else if (skin == 'baby') {
-      mascotAsset = 'assets/mascot/goat_baby.png';
-    } else if (skin == 'sad') {
-      mascotAsset = 'assets/mascot/goat_sad.png';
-    } else if (skin == 'shy') {
-      mascotAsset = 'assets/mascot/goat_shy.png';
-    } else if (skin == 'grumpy') {
-      mascotAsset = 'assets/mascot/goat_grumpy.png';
-    } else if (skin == 'shocked') {
-      mascotAsset = 'assets/mascot/goat_shocked.png';
-    }
+    final mascotAsset = user.currentMascotAsset;
 
     return SingleChildScrollView(
       padding: EdgeInsets.all(ResponsiveLayout.horizontalPadding(context)),
@@ -69,119 +52,143 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                 ),
                 padding: const EdgeInsets.all(24.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
+                child: Builder(
+                  builder: (context) {
+                    final isCompact = ResponsiveLayout.isCompact(context);
+
+                    final courseColumn = Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.secondaryCyan.withValues(
+                              alpha: 0.15,
                             ),
-                            decoration: BoxDecoration(
-                              color: AppColors.secondaryCyan.withValues(
-                                alpha: 0.15,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              'PANEL 1 • CURSO ACTIVO',
-                              style: AppTypography.caption(scale).copyWith(
-                                color: AppColors.secondaryCyan,
-                                fontWeight: FontWeight.w700,
-                              ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            'PANEL 1 • CURSO ACTIVO',
+                            style: AppTypography.caption(scale).copyWith(
+                              color: AppColors.secondaryCyan,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          Text(
-                            '¡Bienvenido, ${user.username ?? "Estudiante"}!',
-                            style: AppTypography.headingLarge(scale)
-                                .copyWith(color: AppColors.textPrimary),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Tu ritmo es el correcto. Cada lección completada fortalece tu lógica y mantiene tu racha encendida.',
-                            style: AppTypography.body(scale),
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          '¡Bienvenido, ${user.username ?? "Estudiante"}!',
+                          style: AppTypography.headingLarge(scale)
+                              .copyWith(color: AppColors.textPrimary),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Tu ritmo es el correcto. Cada lección completada fortalece tu lógica y mantiene tu racha encendida.',
+                          style: AppTypography.body(scale),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              child: Text(
                                 'Lógica de Programación',
                                 style: AppTypography.headingSmall(scale),
-                              ),
-                              Text(
-                                '$percentInt% completado ($completedCount/$totalLessons)',
-                                style: AppTypography.caption(scale).copyWith(
-                                  color: AppColors.secondaryCyan,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: LinearProgressIndicator(
-                              value: progress,
-                              minHeight: 10,
-                              backgroundColor: const Color(0xFF262040),
-                              valueColor: const AlwaysStoppedAnimation(
-                                AppColors.secondaryCyan,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 20),
-                          Wrap(
-                            spacing: 12,
-                            runSpacing: 8,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              ElevatedButton.icon(
-                                icon: const Icon(Icons.play_arrow_rounded),
-                                label: const Text('Continuar Lección'),
-                                onPressed: () {
-                                  final nextLesson = SampleLessons.allLessons
-                                      .firstWhere(
-                                        (l) =>
-                                            !user.completedLessons.contains(l.id),
-                                        orElse: () =>
-                                            SampleLessons.allLessons.first,
-                                      );
-                                  context.go('/lesson/${nextLesson.id}');
-                                },
+                            const SizedBox(width: 8),
+                            Text(
+                              '$percentInt% completado ($completedCount/$totalLessons)',
+                              style: AppTypography.caption(scale).copyWith(
+                                color: AppColors.secondaryCyan,
+                                fontWeight: FontWeight.w600,
                               ),
-                              if (user.lives < user.maxLives)
-                                Container(
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: LinearProgressIndicator(
+                            value: progress,
+                            minHeight: 10,
+                            backgroundColor: const Color(0xFF262040),
+                            valueColor: const AlwaysStoppedAnimation(
+                              AppColors.secondaryCyan,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Wrap(
+                          spacing: 12,
+                          runSpacing: 8,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            ElevatedButton.icon(
+                              icon: const Icon(Icons.play_arrow_rounded),
+                              label: const Text('Continuar Lección'),
+                              onPressed: () {
+                                final nextLesson = SampleLessons.allLessons
+                                    .firstWhere(
+                                      (l) =>
+                                          !user.completedLessons.contains(l.id),
+                                      orElse: () =>
+                                          SampleLessons.allLessons.first,
+                                    );
+                                context.go('/lesson/${nextLesson.id}');
+                              },
+                            ),
+                            if (user.lives < user.maxLives)
+                              InkWell(
+                                onTap: () => showLivesDialog(context, ref),
+                                borderRadius: BorderRadius.circular(16),
+                                child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 10,
                                     vertical: 6,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: AppColors.heartYellow
-                                        .withValues(alpha: 0.12),
+                                    color:
+                                        (user.canRecoverLife
+                                                ? AppColors.successGreen
+                                                : AppColors.heartYellow)
+                                            .withValues(alpha: 0.15),
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
-                                      color: AppColors.heartYellow
-                                          .withValues(alpha: 0.35),
+                                      color:
+                                          (user.canRecoverLife
+                                                  ? AppColors.successGreen
+                                                  : AppColors.heartYellow)
+                                              .withValues(alpha: 0.4),
                                     ),
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Icon(
-                                        Icons.favorite,
+                                      Icon(
+                                        user.canRecoverLife
+                                            ? Icons.favorite
+                                            : Icons.timer_outlined,
                                         size: 14,
-                                        color: AppColors.heartYellow,
+                                        color: user.canRecoverLife
+                                            ? AppColors.successGreen
+                                            : AppColors.heartYellow,
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
-                                        '${user.lives}/${user.maxLives} • Recarga en ${user.formattedTimeUntilNextLife}',
+                                        user.canRecoverLife
+                                            ? '${user.lives}/${user.maxLives} • ¡Recuperar vida!'
+                                            : (isCompact
+                                                  ? '${user.lives}/${user.maxLives} • ${user.formattedTimeUntilNextLife}'
+                                                  : '${user.lives}/${user.maxLives} • Espera ${user.formattedTimeUntilNextLife}'),
                                         style: TextStyle(
-                                          color: AppColors.heartYellow,
+                                          color: user.canRecoverLife
+                                              ? AppColors.successGreen
+                                              : AppColors.heartYellow,
                                           fontSize: 12 * scale,
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -189,48 +196,173 @@ class DashboardScreen extends ConsumerWidget {
                                     ],
                                   ),
                                 ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (!ResponsiveLayout.isCompact(context)) ...[
-                      const SizedBox(width: 24),
-                      SizedBox(
-                        width: 210,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            MascotSpeechBubble(
-                              text: user.streak > 0
-                                  ? '¡Llevas ${user.streak} días seguidos! Tu constancia fortalece tu lógica.'
-                                  : '¡Hola! Aprender programación es como armar un rompecabezas. ¡Vamos paso a paso!',
-                              title: 'GoatCode',
-                              scale: scale,
-                            ),
-                            const SizedBox(height: 10),
-                            MascotStreakAura(
-                              streak: user.streak,
-                              size: 110,
-                              scale: scale,
-                              child: Image.asset(
-                                mascotAsset,
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const Icon(
-                                      Icons.pets,
-                                      color: AppColors.primaryNeon,
-                                      size: 70,
-                                    ),
-                              ).animateBreathing(),
-                            ),
+                              ),
                           ],
                         ),
-                      ),
-                    ],
-                  ],
+                        if (isCompact) ...[
+                          const SizedBox(height: 18),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF130F24),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: user.goatMood.color.withValues(
+                                  alpha: 0.35,
+                                ),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                MascotStreakAura(
+                                  streak: user.streak,
+                                  size: 56,
+                                  showBadge: false,
+                                  scale: scale,
+                                  child: Image.asset(
+                                    mascotAsset,
+                                    key: ValueKey('compact_hero_$mascotAsset'),
+                                    width: 58,
+                                    height: 58,
+                                    fit: BoxFit.contain,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Icon(
+                                              Icons.pets,
+                                              color: AppColors.primaryNeon,
+                                              size: 40,
+                                            ),
+                                  ).animateBreathing(),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            user.goatMood.icon,
+                                            size: 14,
+                                            color: user.goatMood.color,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Flexible(
+                                            child: Text(
+                                              'Estado: ${user.goatMood.displayName}',
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                color: user.goatMood.color,
+                                                fontSize: 12 * scale,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        user.mascotSpeechMessage,
+                                        style: AppTypography.caption(scale)
+                                            .copyWith(
+                                              color: AppColors.textPrimary,
+                                            ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
+                    );
+
+                    if (isCompact) {
+                      return courseColumn;
+                    }
+
+                    return Row(
+                      children: [
+                        Expanded(child: courseColumn),
+                        const SizedBox(width: 24),
+                        SizedBox(
+                          width: 230,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              MascotSpeechBubble(
+                                text: user.mascotSpeechMessage,
+                                title: user.goatMood.showsSadGesture
+                                    ? 'GoatCode • Ánimo: ${user.goatMood.shortLabel}'
+                                    : 'GoatCode',
+                                scale: scale,
+                              ),
+                              const SizedBox(height: 10),
+                              MascotStreakAura(
+                                streak: user.streak,
+                                size: 110,
+                                scale: scale,
+                                child: Image.asset(
+                                  mascotAsset,
+                                  key: ValueKey(mascotAsset),
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(
+                                        Icons.pets,
+                                        color: AppColors.primaryNeon,
+                                        size: 70,
+                                      ),
+                                ).animateBreathing(),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: user.goatMood.color.withValues(
+                                    alpha: 0.15,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: user.goatMood.color.withValues(
+                                      alpha: 0.45,
+                                    ),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      user.goatMood.icon,
+                                      size: 13,
+                                      color: user.goatMood.color,
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      'Ánimo: ${user.goatMood.shortLabel}',
+                                      style: TextStyle(
+                                        color: user.goatMood.color,
+                                        fontSize: 11 * scale,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ).animateEntrance(index: 0),
@@ -239,10 +371,14 @@ class DashboardScreen extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Ruta de Aprendizaje',
-                  style: AppTypography.headingMedium(scale),
+                Flexible(
+                  child: Text(
+                    'Ruta de Aprendizaje',
+                    style: AppTypography.headingMedium(scale),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
+                const SizedBox(width: 8),
                 TextButton.icon(
                   icon: const Icon(Icons.map_rounded, size: 18),
                   label: const Text('Ver Mapa Completo'),
@@ -337,8 +473,9 @@ class DashboardScreen extends ConsumerWidget {
                                 onPressed: () {
                                   final firstIncomplete = mod.lessons
                                       .firstWhere(
-                                        (l) => !user.completedLessons
-                                            .contains(l.id),
+                                        (l) => !user.completedLessons.contains(
+                                          l.id,
+                                        ),
                                         orElse: () => mod.lessons.first,
                                       );
                                   context.go('/lesson/${firstIncomplete.id}');
@@ -362,39 +499,110 @@ class DashboardScreen extends ConsumerWidget {
 
             const SizedBox(height: 32),
 
-            Row(
-              children: [
-                Expanded(
-                  child: CosmicCard(
-                    padding: EdgeInsets.zero,
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(16),
-                      leading: CircleAvatar(
-                        backgroundColor: AppColors.secondaryCyan.withValues(
-                          alpha: 0.2,
-                        ),
-                        child: const Icon(
-                          Icons.lightbulb_outline,
-                          color: AppColors.secondaryCyan,
-                        ),
-                      ),
-                      title: Text(
-                        'Ayuda y Analogías',
-                        style: AppTypography.headingSmall(scale),
-                      ),
-                      subtitle: Text(
-                        'Consulta explicaciones sencillas sin términos confusos.',
-                        style: AppTypography.caption(scale),
-                      ),
-                      trailing: const Icon(
-                        Icons.chevron_right,
-                        color: AppColors.textMuted,
-                      ),
-                      onTap: () => _showFaqDialog(context, scale),
+            if (ResponsiveLayout.isCompact(context)) ...[
+              CosmicCard(
+                padding: EdgeInsets.zero,
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(16),
+                  leading: CircleAvatar(
+                    backgroundColor: AppColors.secondaryCyan.withValues(
+                      alpha: 0.2,
                     ),
-                  ).animateEntrance(index: modules.length + 1),
+                    child: const Icon(
+                      Icons.lightbulb_outline,
+                      color: AppColors.secondaryCyan,
+                    ),
+                  ),
+                  title: Text(
+                    'Ayuda y Analogías',
+                    style: AppTypography.headingSmall(scale),
+                  ),
+                  subtitle: Text(
+                    'Consulta explicaciones sencillas sin términos confusos.',
+                    style: AppTypography.caption(scale),
+                  ),
+                  trailing: const Icon(
+                    Icons.chevron_right,
+                    color: AppColors.textMuted,
+                  ),
+                  onTap: () => _showFaqDialog(context, scale),
                 ),
-                if (!ResponsiveLayout.isCompact(context)) ...[
+              ).animateEntrance(index: modules.length + 1),
+              const SizedBox(height: 14),
+              CosmicCard(
+                padding: EdgeInsets.zero,
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(16),
+                  leading: CircleAvatar(
+                    backgroundColor: user.goatMood.color.withValues(alpha: 0.2),
+                    child: Image.asset(
+                      user.currentMascotAsset,
+                      key: ValueKey(
+                        'dash_card_compact_${user.currentMascotAsset}',
+                      ),
+                      width: 28,
+                      height: 28,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                        user.goatMood.showsSadGesture
+                            ? Icons.sentiment_dissatisfied
+                            : Icons.pets,
+                        color: user.goatMood.color,
+                      ),
+                    ),
+                  ),
+                  title: Text(
+                    user.goatMood.showsSadGesture
+                        ? 'Estado: Cabra Triste'
+                        : 'Personaliza tu Cabra',
+                    style: AppTypography.headingSmall(scale),
+                  ),
+                  subtitle: Text(
+                    user.goatMood.showsSadGesture
+                        ? 'Cabra triste por pérdida de vidas (${user.lives}/${user.maxLives} ❤️). Espera 15 min para recuperar vida.'
+                        : 'Cambia el atuendo y estilo de tu compañera de estudio.',
+                    style: AppTypography.caption(scale),
+                  ),
+                  trailing: const Icon(
+                    Icons.chevron_right,
+                    color: AppColors.textMuted,
+                  ),
+                  onTap: () => context.go('/mascot'),
+                ),
+              ).animateEntrance(index: modules.length + 2),
+            ] else ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: CosmicCard(
+                      padding: EdgeInsets.zero,
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(16),
+                        leading: CircleAvatar(
+                          backgroundColor: AppColors.secondaryCyan.withValues(
+                            alpha: 0.2,
+                          ),
+                          child: const Icon(
+                            Icons.lightbulb_outline,
+                            color: AppColors.secondaryCyan,
+                          ),
+                        ),
+                        title: Text(
+                          'Ayuda y Analogías',
+                          style: AppTypography.headingSmall(scale),
+                        ),
+                        subtitle: Text(
+                          'Consulta explicaciones sencillas sin términos confusos.',
+                          style: AppTypography.caption(scale),
+                        ),
+                        trailing: const Icon(
+                          Icons.chevron_right,
+                          color: AppColors.textMuted,
+                        ),
+                        onTap: () => _showFaqDialog(context, scale),
+                      ),
+                    ).animateEntrance(index: modules.length + 1),
+                  ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: CosmicCard(
@@ -402,20 +610,35 @@ class DashboardScreen extends ConsumerWidget {
                       child: ListTile(
                         contentPadding: const EdgeInsets.all(16),
                         leading: CircleAvatar(
-                          backgroundColor: AppColors.primaryNeon.withValues(
+                          backgroundColor: user.goatMood.color.withValues(
                             alpha: 0.2,
                           ),
-                          child: const Icon(
-                            Icons.pets,
-                            color: AppColors.primaryNeonLight,
+                          child: Image.asset(
+                            user.currentMascotAsset,
+                            key: ValueKey(
+                              'dash_card_${user.currentMascotAsset}',
+                            ),
+                            width: 28,
+                            height: 28,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) => Icon(
+                              user.goatMood.showsSadGesture
+                                  ? Icons.sentiment_dissatisfied
+                                  : Icons.pets,
+                              color: user.goatMood.color,
+                            ),
                           ),
                         ),
                         title: Text(
-                          'Personaliza tu Cabra',
+                          user.goatMood.showsSadGesture
+                              ? 'Estado: Cabra Triste'
+                              : 'Personaliza tu Cabra',
                           style: AppTypography.headingSmall(scale),
                         ),
                         subtitle: Text(
-                          'Cambia el atuendo y estilo de tu compañera de estudio.',
+                          user.goatMood.showsSadGesture
+                              ? 'Cabra triste por pérdida de vidas (${user.lives}/${user.maxLives} ❤️). Espera 15 min para recuperar vida.'
+                              : 'Cambia el atuendo y estilo de tu compañera de estudio.',
                           style: AppTypography.caption(scale),
                         ),
                         trailing: const Icon(
@@ -427,8 +650,8 @@ class DashboardScreen extends ConsumerWidget {
                     ).animateEntrance(index: modules.length + 2),
                   ),
                 ],
-              ],
-            ),
+              ),
+            ],
           ],
         ),
       ),

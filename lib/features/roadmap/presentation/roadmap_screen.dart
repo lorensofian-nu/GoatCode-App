@@ -78,123 +78,119 @@ class RoadmapScreen extends ConsumerWidget {
                 return CosmicCard(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: isFullyCompleted
-                                  ? AppColors.successGreen.withValues(
-                                      alpha: 0.2,
-                                    )
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: isFullyCompleted
+                                ? AppColors.successGreen.withValues(alpha: 0.2)
+                                : mod.isUnlocked
+                                ? AppColors.secondaryCyan.withValues(alpha: 0.2)
+                                : Colors.white.withValues(alpha: 0.05),
+                            child: Icon(
+                              isFullyCompleted
+                                  ? Icons.check_circle_rounded
                                   : mod.isUnlocked
-                                  ? AppColors.secondaryCyan.withValues(
-                                      alpha: 0.2,
+                                  ? Icons.play_circle_outline_rounded
+                                  : Icons.lock_outline_rounded,
+                              color: isFullyCompleted
+                                  ? AppColors.successGreen
+                                  : mod.isUnlocked
+                                  ? AppColors.secondaryCyan
+                                  : AppColors.textMuted,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  mod.title,
+                                  style: AppTypography.headingSmall(scale),
+                                ),
+                                Text(
+                                  mod.description,
+                                  style: AppTypography.caption(scale),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isFullyCompleted
+                                  ? AppColors.successGreen.withValues(
+                                      alpha: 0.15,
                                     )
-                                  : Colors.white.withValues(alpha: 0.05),
-                              child: Icon(
-                                isFullyCompleted
-                                    ? Icons.check_circle_rounded
-                                    : mod.isUnlocked
-                                    ? Icons.play_circle_outline_rounded
-                                    : Icons.lock_outline_rounded,
+                                  : AppColors.primaryNeon.withValues(
+                                      alpha: 0.15,
+                                    ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '$completedInMod/${mod.lessons.length}',
+                              style: TextStyle(
                                 color: isFullyCompleted
                                     ? AppColors.successGreen
-                                    : mod.isUnlocked
-                                    ? AppColors.secondaryCyan
-                                    : AppColors.textMuted,
+                                    : AppColors.secondaryCyan,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13 * scale,
                               ),
                             ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    mod.title,
-                                    style: AppTypography.headingSmall(scale),
-                                  ),
-                                  Text(
-                                    mod.description,
-                                    style: AppTypography.caption(scale),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isFullyCompleted
-                                    ? AppColors.successGreen.withValues(
-                                        alpha: 0.15,
-                                      )
-                                    : AppColors.primaryNeon.withValues(
-                                        alpha: 0.15,
-                                      ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                '$completedInMod/${mod.lessons.length}',
-                                style: TextStyle(
-                                  color: isFullyCompleted
-                                      ? AppColors.successGreen
-                                      : AppColors.secondaryCyan,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13 * scale,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        const Divider(color: AppColors.surfaceBorder),
-                        const SizedBox(height: 10),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      const Divider(color: AppColors.surfaceBorder),
+                      const SizedBox(height: 10),
 
-                        ...mod.lessons.map((lesson) {
-                          final isCompleted = user.completedLessons.contains(
-                            lesson.id,
-                          );
-                          return ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 8,
+                      ...mod.lessons.map((lesson) {
+                        final isCompleted = user.completedLessons.contains(
+                          lesson.id,
+                        );
+                        return ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                          ),
+                          leading: Icon(
+                            isCompleted
+                                ? Icons.check_circle
+                                : Icons.radio_button_unchecked,
+                            color: isCompleted
+                                ? AppColors.successGreen
+                                : AppColors.secondaryCyan,
+                            size: 20,
+                          ),
+                          title: Text(
+                            lesson.title,
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 15 * scale,
                             ),
-                            leading: Icon(
-                              isCompleted
-                                  ? Icons.check_circle
-                                  : Icons.radio_button_unchecked,
-                              color: isCompleted
-                                  ? AppColors.successGreen
-                                  : AppColors.secondaryCyan,
-                              size: 20,
+                          ),
+                          subtitle: Text(
+                            lesson.analogyTitle,
+                            style: AppTypography.caption(scale),
+                          ),
+                          trailing: OutlinedButton(
+                            onPressed: mod.isUnlocked
+                                ? () => context.go('/lesson/${lesson.id}')
+                                : null,
+                            child: Text(
+                              isCompleted ? 'Repasar' : 'Comenzar',
+                              style: TextStyle(fontSize: 13 * scale),
                             ),
-                            title: Text(
-                              lesson.title,
-                              style: TextStyle(
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 15 * scale,
-                              ),
-                            ),
-                            subtitle: Text(
-                              lesson.analogyTitle,
-                              style: AppTypography.caption(scale),
-                            ),
-                            trailing: OutlinedButton(
-                              onPressed: mod.isUnlocked
-                                  ? () => context.go('/lesson/${lesson.id}')
-                                  : null,
-                              child: Text(
-                                isCompleted ? 'Repasar' : 'Comenzar',
-                                style: TextStyle(fontSize: 13 * scale),
-                              ),
-                            ),
-                          );
-                        }),
-                      ],
-                    ),
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
                 ).animateEntrance(index: index);
               },
             ),
@@ -215,7 +211,9 @@ class _SinuousConnectorPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final activeColor = isCompleted ? AppColors.successGreen : AppColors.secondaryCyan;
+    final activeColor = isCompleted
+        ? AppColors.successGreen
+        : AppColors.secondaryCyan;
 
     final paint = Paint()
       ..color = activeColor.withValues(alpha: 0.5)
@@ -228,9 +226,12 @@ class _SinuousConnectorPainter extends CustomPainter {
 
     path.moveTo(startX, 0);
     path.cubicTo(
-      startX, size.height * 0.5,
-      endX, size.height * 0.5,
-      endX, size.height,
+      startX,
+      size.height * 0.5,
+      endX,
+      size.height * 0.5,
+      endX,
+      size.height,
     );
 
     canvas.drawPath(path, paint);

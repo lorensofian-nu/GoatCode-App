@@ -5,8 +5,8 @@ import '../theme/app_colors.dart';
 /// Levels of streak radiance for the GoatCode mascot.
 enum StreakTier {
   cosmic, // 0 - 2 days (Violet Neon)
-  fire,   // 3 - 6 days (Amber Fire)
-  solar,  // 7+ days (Mythic Solar Gold)
+  fire, // 3 - 6 days (Amber Fire)
+  solar, // 7+ days (Mythic Solar Gold)
 }
 
 extension StreakTierExtension on StreakTier {
@@ -151,19 +151,18 @@ class MascotStreakAura extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  tier.icon,
-                  size: 13 * scale,
-                  color: tier.primaryColor,
-                ),
+                Icon(tier.icon, size: 13 * scale, color: tier.primaryColor),
                 const SizedBox(width: 5),
-                Text(
-                  '$streak d • ${tier.label}',
-                  style: TextStyle(
-                    color: tier.secondaryColor,
-                    fontSize: 11 * scale,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.4,
+                Flexible(
+                  child: Text(
+                    '$streak d • ${tier.label}',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: tier.secondaryColor,
+                      fontSize: 11 * scale,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.4,
+                    ),
                   ),
                 ),
               ],

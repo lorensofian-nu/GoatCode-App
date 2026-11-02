@@ -338,10 +338,7 @@ class CatalogScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             OutlinedButton(
               onPressed: null,
-              child: Text(
-                'Bloqueado',
-                style: TextStyle(fontSize: 13 * scale),
-              ),
+              child: Text('Bloqueado', style: TextStyle(fontSize: 13 * scale)),
             ),
           ],
         ),

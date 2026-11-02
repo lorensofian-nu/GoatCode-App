@@ -17,6 +17,7 @@ class MascotScreen extends ConsumerStatefulWidget {
 
 class _MascotScreenState extends ConsumerState<MascotScreen> {
   late String _selectedSkin;
+  bool _previewCustomSkin = false;
 
   final List<Map<String, String>> _skins = [
     {
@@ -84,11 +85,15 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
 
   void _saveLook() {
     ref.read(userProfileProvider.notifier).updateMascotSkin(_selectedSkin);
+    final user = ref.read(userProfileProvider);
+    final msg = user.goatMood.showsSadGesture
+        ? '¡Look guardado! Tu cabra lo lucirá alegre cuando recupere sus 5 vidas.'
+        : '¡Look de tu Cabra guardado exitosamente!';
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('¡Look de tu Cabra guardado exitosamente!'),
+      SnackBar(
+        content: Text(msg),
         backgroundColor: AppColors.successGreen,
-        duration: Duration(seconds: 2),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -119,61 +124,187 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
               'Elige cómo quieres que tu compañera cabra se vista durante tus lecciones y en el dashboard.',
               style: AppTypography.body(scale),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 16),
 
-            // Main Stage: Podium & Mascot (Wireframe 04 center)
-            Card(
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 36,
-                  horizontal: 20,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  gradient: RadialGradient(
-                    colors: [
-                      AppColors.primaryNeon.withValues(alpha: 0.25),
-                      const Color(0xFF130F24),
-                    ],
-                    radius: 0.9,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    MascotStreakAura(
-                      streak: user.streak,
-                      size: 210,
-                      scale: scale,
-                      child: Image.asset(
-                        activeSkinData['asset']!,
-                        key: ValueKey(_selectedSkin),
-                        width: 180,
-                        height: 180,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(
-                              Icons.pets,
-                              size: 100,
-                              color: AppColors.primaryNeon,
-                            ),
-                      ).animateCelebrate().animateBreathing(),
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      activeSkinData['name']!,
-                      style: AppTypography.headingMedium(scale)
-                          .copyWith(color: AppColors.secondaryCyan),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      activeSkinData['desc']!,
-                      style: AppTypography.bodyMuted(scale),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+            // Banner explicativo de la Regla de Estado de Ánimo según vidas disponibles
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: user.goatMood.color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: user.goatMood.color.withValues(alpha: 0.35),
                 ),
               ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    user.goatMood.icon,
+                    color: user.goatMood.color,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Estado de Ánimo: ${user.goatMood.displayName}',
+                              style: AppTypography.headingSmall(scale).copyWith(
+                                color: user.goatMood.color,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.heartYellow.withValues(
+                                  alpha: 0.2,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                '${user.lives}/${user.maxLives} ❤️',
+                                style: TextStyle(
+                                  color: AppColors.heartYellow,
+                                  fontSize: 11 * scale,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          user.goatMood.showsSadGesture
+                              ? 'Al haber perdido vidas (${user.lives} de ${user.maxLives}), tu cabra ha cambiado de estado a Cabra Triste. Recuerda que se tiene que esperar a que pasen los 15 minutos para poder recuperar cada vida; no se puede recuperar automáticamente.'
+                              : 'Regla activa: Con 5 vidas tu cabra está en estado Cabra Feliz. Al perder vidas, su estado cambiará inmediatamente a Cabra Triste y se deberá esperar 15 minutos para poder recuperar cada vida.',
+                          style: AppTypography.caption(scale)
+                              .copyWith(color: AppColors.textPrimary),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Main Stage: Podium & Mascot (Wireframe 04 center)
+            Builder(
+              builder: (context) {
+                final showSadState =
+                    user.goatMood.showsSadGesture && !_previewCustomSkin;
+
+                return Card(
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 36,
+                      horizontal: 20,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: RadialGradient(
+                        colors: [
+                          AppColors.primaryNeon.withValues(alpha: 0.25),
+                          const Color(0xFF130F24),
+                        ],
+                        radius: 0.9,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        if (user.goatMood.showsSadGesture) ...[
+                          Wrap(
+                            spacing: 8,
+                            alignment: WrapAlignment.center,
+                            children: [
+                              ChoiceChip(
+                                avatar: Icon(
+                                  Icons.sentiment_dissatisfied,
+                                  size: 16,
+                                  color: user.goatMood.color,
+                                ),
+                                label: Text(
+                                  'Estado actual: Triste (${user.lives} vidas)',
+                                ),
+                                selected: !_previewCustomSkin,
+                                onSelected: (val) {
+                                  if (val) {
+                                    setState(() => _previewCustomSkin = false);
+                                  }
+                                },
+                              ),
+                              ChoiceChip(
+                                avatar: const Icon(
+                                  Icons.palette_outlined,
+                                  size: 16,
+                                  color: AppColors.secondaryCyan,
+                                ),
+                                label: const Text('Previsualizar atuendos'),
+                                selected: _previewCustomSkin,
+                                onSelected: (val) {
+                                  if (val) {
+                                    setState(() => _previewCustomSkin = true);
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        MascotStreakAura(
+                          streak: user.streak,
+                          size: 210,
+                          scale: scale,
+                          child: Image.asset(
+                            showSadState
+                                ? 'assets/mascot/goat_sad.png'
+                                : activeSkinData['asset']!,
+                            key: ValueKey('${_selectedSkin}_$showSadState'),
+                            width: 180,
+                            height: 180,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(
+                                  Icons.pets,
+                                  size: 100,
+                                  color: AppColors.primaryNeon,
+                                ),
+                          ).animateCelebrate().animateBreathing(),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          showSadState
+                              ? 'Estado: Cabra Triste'
+                              : activeSkinData['name']!,
+                          style: AppTypography.headingMedium(scale).copyWith(
+                            color: showSadState
+                                ? user.goatMood.color
+                                : AppColors.secondaryCyan,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          showSadState
+                              ? 'Tu cabra está en estado Cabra Triste porque has perdido vidas (${user.lives}/${user.maxLives} ❤️). Debes esperar a que pasen los 15 minutos para poder recuperarla (no se recupera automáticamente).'
+                              : activeSkinData['desc']!,
+                          style: AppTypography.bodyMuted(scale),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ).animateEntrance(index: 0),
             const SizedBox(height: 28),
 
@@ -194,8 +325,10 @@ class _MascotScreenState extends ConsumerState<MascotScreen> {
                           ? constraints.maxWidth
                           : (constraints.maxWidth - 12) / 2,
                       child: InkWell(
-                        onTap: () =>
-                            setState(() => _selectedSkin = skin['id']!),
+                        onTap: () => setState(() {
+                          _selectedSkin = skin['id']!;
+                          _previewCustomSkin = true;
+                        }),
                         borderRadius: BorderRadius.circular(14),
                         child: AnimatedContainer(
                           duration: AppMotion.durationMicro,

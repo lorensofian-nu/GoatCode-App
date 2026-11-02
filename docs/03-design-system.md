@@ -119,5 +119,12 @@ Para garantizar un contraste óptico superior (WCAG AAA) y máxima legibilidad d
     - En modo Obsidiana Mate (`glassEffectEnabled == false`), `CosmicCard` y las barras de navegación omiten `BackdropFilter` y gradientes de luz, empleando fondos sólidos `#141026` y bordes limpios, eliminando el 100% de reflejos para estudio bajo luz solar o fatiga visual.
 11. **Micro-Sombras de Contraste Tipográfico (`TextShadow` de Protección):**
     - Todos los tokens de `AppTypography` incorporan `contrastShadow` y `subtleContrastShadow` (sombras de oclusión negra con offset y desenfoque óptico), logrando separación perfecta entre cada letra y cualquier elemento o halo de fondo.
+12. **Sistema de Estado de Ánimo Dinámico de la Mascota según Vidas (`GoatMood`):**
+    - *Regla Emocional Reactiva:* El gesto visual y los diálogos pedagógicos de la cabra dependen en tiempo real del saldo de vidas disponibles:
+      - **4 a 5 vidas (80% - 100%):** Estado `GoatMood.happy`. Gesto sonriente / atuendo personalizado del usuario. Diálogo motivador con racha y energía.
+      - **3 vidas (60%):** Estado `GoatMood.attentive`. Gesto neutral o concentrado (`goat_idle.png` o atuendo activo). Diálogo de precaución reflexiva.
+      - **1 a 2 vidas (20% - 40%):** Estado `GoatMood.sad` (*bajada considerable de vidas*). El gesto visual cambia obligatoriamente a triste (`assets/mascot/goat_sad.png`), priorizando la empatía pedagógica sobre la personalización cosmética.
+      - **0 vidas (0%):** Estado `GoatMood.critical`. Gesto triste/afligido (`assets/mascot/goat_sad.png`) con mensaje de descanso y aliento para la recarga.
+    - Se refleja transversalmente en Dashboard, Shell de Navegación (`AdaptiveScaffold`), Tarjeta de Personalización (`MascotScreen`), Modal de Vidas (`LivesBadge`) y lecciones (`LessonScreen`).
 
 

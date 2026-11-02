@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -85,7 +86,8 @@ class _CosmicCardState extends ConsumerState<CosmicCard>
     final disableAnimations =
         (MediaQuery.maybeDisableAnimationsOf(context) ?? false) ||
         AppMotion.isTestEnvironment;
-    final isHovering = widget.enableHoverEffect && _isHovered && !disableAnimations;
+    final isHovering =
+        widget.enableHoverEffect && _isHovered && !disableAnimations;
     final activeGlow = widget.glowColor ?? AppColors.primaryNeon;
     final isGlass = _isGlass;
 
@@ -119,7 +121,9 @@ class _CosmicCardState extends ConsumerState<CosmicCard>
               boxShadow: [
                 // 1. Ambient Occlusion Shadow
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: isHovering ? 0.38 : 0.25),
+                  color: Colors.black.withValues(
+                    alpha: isHovering ? 0.38 : 0.25,
+                  ),
                   blurRadius: isHovering ? 14 : 8,
                   offset: const Offset(0, 4),
                 ),
@@ -138,10 +142,7 @@ class _CosmicCardState extends ConsumerState<CosmicCard>
             child: ClipRRect(
               borderRadius: BorderRadius.circular(widget.borderRadius),
               child: !isGlass
-                  ? Padding(
-                      padding: widget.padding,
-                      child: widget.child,
-                    )
+                  ? Padding(padding: widget.padding, child: widget.child)
                   : BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 7, sigmaY: 7),
                       child: CustomPaint(
@@ -166,8 +167,9 @@ class _CosmicCardState extends ConsumerState<CosmicCard>
                           child: Container(
                             padding: widget.padding,
                             decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(widget.borderRadius),
+                              borderRadius: BorderRadius.circular(
+                                widget.borderRadius,
+                              ),
                               gradient: LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -229,8 +231,10 @@ class _SpecularBorderPainter extends CustomPainter {
       end: Alignment.bottomRight,
       colors: isHovering
           ? [
-              Colors.white.withValues(alpha: 0.45), // Soft mirror edge reflection
-              glowColor.withValues(alpha: 0.40),    // Gentle neon refraction
+              Colors.white.withValues(
+                alpha: 0.45,
+              ), // Soft mirror edge reflection
+              glowColor.withValues(alpha: 0.40), // Gentle neon refraction
               glowColor.withValues(alpha: 0.15),
               Colors.white.withValues(alpha: 0.06),
             ]
@@ -288,7 +292,9 @@ class _LightSheenPainter extends CustomPainter {
         colors: [
           Colors.transparent,
           Colors.white.withValues(alpha: 0.02),
-          Colors.white.withValues(alpha: 0.07), // Soft sheen: text remains crisp & clear
+          Colors.white.withValues(
+            alpha: 0.07,
+          ), // Soft sheen: text remains crisp & clear
           Colors.white.withValues(alpha: 0.02),
           Colors.transparent,
         ],

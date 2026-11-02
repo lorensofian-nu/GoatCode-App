@@ -25,20 +25,12 @@ class AppTypography {
 
   /// Protective micro-contrast shadow for heading and title typography.
   static const List<Shadow> contrastShadow = [
-    Shadow(
-      offset: Offset(0, 1.2),
-      blurRadius: 3.0,
-      color: Color(0x99000000),
-    ),
+    Shadow(offset: Offset(0, 1.2), blurRadius: 3.0, color: Color(0x99000000)),
   ];
 
   /// Subtle micro-contrast shadow for body, caption, and code typography.
   static const List<Shadow> subtleContrastShadow = [
-    Shadow(
-      offset: Offset(0, 1.0),
-      blurRadius: 2.0,
-      color: Color(0x66000000),
-    ),
+    Shadow(offset: Offset(0, 1.0), blurRadius: 2.0, color: Color(0x66000000)),
   ];
 
   static TextStyle display(double scale) => TextStyle(

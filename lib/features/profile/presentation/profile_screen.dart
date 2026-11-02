@@ -137,6 +137,12 @@ class ProfileScreen extends ConsumerWidget {
                                 scale,
                               ),
                               _statChip(
+                                user.goatMood.icon,
+                                'Cabra ${user.goatMood.shortLabel.toLowerCase()}',
+                                user.goatMood.color,
+                                scale,
+                              ),
+                              _statChip(
                                 Icons.check_circle,
                                 '$completedCount lecciones',
                                 AppColors.successGreen,

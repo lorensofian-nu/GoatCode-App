@@ -130,11 +130,13 @@ class LocalStorageService {
   Future<bool> setSoundEnabled(bool value) =>
       _prefs.setBool(_keySoundEnabled, value);
 
-  bool getGlassEffectEnabled() => _prefs.getBool(_keyGlassEffectEnabled) ?? true;
+  bool getGlassEffectEnabled() =>
+      _prefs.getBool(_keyGlassEffectEnabled) ?? true;
   Future<bool> setGlassEffectEnabled(bool value) =>
       _prefs.setBool(_keyGlassEffectEnabled, value);
 
-  // Lives System (5 vidas y recarga temporal pasiva)
+  // Lives System (5 vidas y espera de 15 minutos por vida)
+  // Regla: No se pueden recuperar automáticamente. Se debe esperar a que pasen los 15 minutos para poder recuperar cada vida.
   int getLives() {
     final stored = _prefs.getInt(_keyLives) ?? maxLives;
     if (stored >= maxLives) {
@@ -143,32 +145,6 @@ class LocalStorageService {
       }
       return maxLives;
     }
-
-    final lastTimestamp = _prefs.getInt(_keyLastLifeLossTimestamp);
-    if (lastTimestamp == null) {
-      return stored;
-    }
-
-    final now = DateTime.now().millisecondsSinceEpoch;
-    final elapsedMs = now - lastTimestamp;
-    if (elapsedMs <= 0) return stored;
-
-    final regenIntervalMs = lifeRegenMinutes * 60 * 1000;
-    final livesGained = elapsedMs ~/ regenIntervalMs;
-
-    if (livesGained > 0) {
-      final updatedLives = (stored + livesGained).clamp(0, maxLives);
-      _prefs.setInt(_keyLives, updatedLives);
-
-      if (updatedLives >= maxLives) {
-        _prefs.remove(_keyLastLifeLossTimestamp);
-      } else {
-        final remainderMs = elapsedMs % regenIntervalMs;
-        _prefs.setInt(_keyLastLifeLossTimestamp, now - remainderMs);
-      }
-      return updatedLives;
-    }
-
     return stored;
   }
 
@@ -184,9 +160,48 @@ class LocalStorageService {
     if (elapsedMs < 0) return lifeRegenMinutes * 60;
 
     final regenIntervalMs = lifeRegenMinutes * 60 * 1000;
-    final remainingMs = regenIntervalMs - (elapsedMs % regenIntervalMs);
+    if (elapsedMs >= regenIntervalMs) {
+      return 0; // Cumplidos los 15 minutos de espera: listo para recuperar
+    }
+
+    final remainingMs = regenIntervalMs - elapsedMs;
     final seconds = (remainingMs / 1000).ceil();
     return seconds.clamp(0, lifeRegenMinutes * 60);
+  }
+
+  bool canRecoverLife() {
+    final current = getLives();
+    if (current >= maxLives) return false;
+    return getSecondsToNextLife() == 0;
+  }
+
+  Future<int> recoverLife() async {
+    final current = getLives();
+    if (current >= maxLives) return current;
+
+    final lastTimestamp = _prefs.getInt(_keyLastLifeLossTimestamp);
+    if (lastTimestamp == null) return current;
+
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final elapsedMs = now - lastTimestamp;
+    final regenIntervalMs = lifeRegenMinutes * 60 * 1000;
+
+    // Regla estricta: Se tiene que esperar a que pasen los 15 minutos.
+    // No se puede recuperar automáticamente ni antes de tiempo.
+    if (elapsedMs < regenIntervalMs) {
+      return current;
+    }
+
+    final newLives = (current + 1).clamp(0, maxLives);
+    await _prefs.setInt(_keyLives, newLives);
+
+    if (newLives >= maxLives) {
+      await _prefs.remove(_keyLastLifeLossTimestamp);
+    } else {
+      final remainder = elapsedMs - regenIntervalMs;
+      await _prefs.setInt(_keyLastLifeLossTimestamp, now - remainder);
+    }
+    return newLives;
   }
 
   Future<int> loseLife() async {

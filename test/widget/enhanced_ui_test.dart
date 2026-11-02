@@ -11,29 +11,28 @@ import 'package:goat_code/features/lesson/presentation/widgets/reading_progress_
 
 void main() {
   group('Enhanced UI widgets tests', () {
-    testWidgets('CodeSnippetBlock renders syntax-highlighted code with line numbers', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: CodeSnippetBlock(
-              code: 'var x = 10;\nprint(x);',
-              title: 'Snippet Test',
+    testWidgets(
+      'CodeSnippetBlock renders syntax-highlighted code with line numbers',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: CodeSnippetBlock(
+                code: 'var x = 10;\nprint(x);',
+                title: 'Snippet Test',
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('Snippet Test'), findsOneWidget);
-      expect(find.text('1'), findsOneWidget);
-      expect(find.text('2'), findsOneWidget);
-      expect(find.text('Copiar'), findsOneWidget);
-    });
+        expect(find.text('Snippet Test'), findsOneWidget);
+        expect(find.text('1'), findsOneWidget);
+        expect(find.text('2'), findsOneWidget);
+        expect(find.text('Copiar'), findsOneWidget);
+      },
+    );
 
-    testWidgets('MascotSpeechBubble renders title and message', (
-      tester,
-    ) async {
+    testWidgets('MascotSpeechBubble renders title and message', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -81,9 +80,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: CosmicBackground(
-              child: Text('Cosmic Starship'),
-            ),
+            body: CosmicBackground(child: Text('Cosmic Starship')),
           ),
         ),
       );
@@ -91,75 +88,63 @@ void main() {
       expect(find.text('Cosmic Starship'), findsOneWidget);
     });
 
-    testWidgets('ReadingProgressBar renders with correct semantics and bounds', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: ReadingProgressBar(progress: 0.5),
+    testWidgets(
+      'ReadingProgressBar renders with correct semantics and bounds',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(body: ReadingProgressBar(progress: 0.5)),
           ),
-        ),
-      );
+        );
 
-      expect(
-        find.bySemanticsLabel('Progreso de lectura de la lección: 50%'),
-        findsOneWidget,
-      );
-    });
+        expect(
+          find.bySemanticsLabel('Progreso de lectura de la lección: 50%'),
+          findsOneWidget,
+        );
+      },
+    );
 
-    testWidgets('MascotStreakAura renders appropriate tier badges based on streak days', (
-      tester,
-    ) async {
-      // Test Tier 1: Cosmic
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: MascotStreakAura(
-              streak: 1,
-              child: Icon(Icons.pets),
+    testWidgets(
+      'MascotStreakAura renders appropriate tier badges based on streak days',
+      (tester) async {
+        // Test Tier 1: Cosmic
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MascotStreakAura(streak: 1, child: Icon(Icons.pets)),
             ),
           ),
-        ),
-      );
-      expect(find.text('1 d • Aura Cósmica'), findsOneWidget);
+        );
+        expect(find.text('1 d • Aura Cósmica'), findsOneWidget);
 
-      // Test Tier 2: Fire
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: MascotStreakAura(
-              streak: 5,
-              child: Icon(Icons.pets),
+        // Test Tier 2: Fire
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MascotStreakAura(streak: 5, child: Icon(Icons.pets)),
             ),
           ),
-        ),
-      );
-      expect(find.text('5 d • Aura de Fuego'), findsOneWidget);
+        );
+        expect(find.text('5 d • Aura de Fuego'), findsOneWidget);
 
-      // Test Tier 3: Solar
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: MascotStreakAura(
-              streak: 10,
-              child: Icon(Icons.pets),
+        // Test Tier 3: Solar
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MascotStreakAura(streak: 10, child: Icon(Icons.pets)),
             ),
           ),
-        ),
-      );
-      expect(find.text('10 d • Aura Solar'), findsOneWidget);
-    });
+        );
+        expect(find.text('10 d • Aura Solar'), findsOneWidget);
+      },
+    );
 
     test('SoundService executes methods without throwing exceptions', () {
       expect(
         () => SoundService.playSuccess(soundEnabled: true),
         returnsNormally,
       );
-      expect(
-        () => SoundService.playError(soundEnabled: true),
-        returnsNormally,
-      );
+      expect(() => SoundService.playError(soundEnabled: true), returnsNormally);
       expect(
         () => SoundService.playStreak(soundEnabled: false),
         returnsNormally,

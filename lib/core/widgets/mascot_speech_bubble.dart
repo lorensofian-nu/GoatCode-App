@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_motion.dart';
@@ -62,12 +62,15 @@ class MascotSpeechBubble extends StatelessWidget {
                     color: AppColors.secondaryCyan,
                   ),
                   const SizedBox(width: 6),
-                  Text(
-                    title!,
-                    style: TextStyle(
-                      color: AppColors.secondaryCyan,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 12 * scale,
+                  Flexible(
+                    child: Text(
+                      title!,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: AppColors.secondaryCyan,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12 * scale,
+                      ),
                     ),
                   ),
                 ],
